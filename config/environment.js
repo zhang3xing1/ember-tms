@@ -19,14 +19,18 @@ module.exports = function(environment) {
         }
     };
 
+    // https://www.google.com/maps/api/js/master?pb=!1m2!1u20!2s15!2szh-CN!3sUS!4s20/15/intl/zh_cn#WyI3eDV3d2Mxam85IiwiIl0
+    // https://fonts.lug.ustc.edu.cn/css?family=Roboto:300,400,500,700
+
     ENV.contentSecurityPolicy = {
         'default-src': "'none'",
-        'script-src': "'self' 'unsafe-eval' *.googleapis.com maps.gstatic.com",
-        'font-src': "'self' fonts.gstatic.com fonts.lug.ustc.edu.cn",
+        'script-src': "'self' 'unsafe-eval' *.googleapis.com maps.gstatic.com *.google.com",
+        'font-src': "'self' fonts.gstatic.com *.lug.ustc.edu.cn *.google.com ",
         // 'http://fonts.lug.ustc.edu.cn/
-        'connect-src': "'self' maps.gstatic.com",
-        'img-src': "'self' *.googleapis.com maps.gstatic.com csi.gstatic.com",
-        'style-src': "'self' 'unsafe-inline' fonts.googleapis.com maps.gstatic.com"
+        'frame-src': "'self' fonts.gstatic.com fonts.lug.ustc.edu.cn *.google.com",
+        'connect-src': "'self' maps.gstatic.com *.google.com",
+        'img-src': "'self' *.googleapis.com maps.gstatic.com csi.gstatic.com *.google.com",
+        'style-src': "'self' 'unsafe-inline' fonts.googleapis.com maps.gstatic.com *.google.com *.lug.ustc.edu.cn"
     };
 
     if (environment === 'development') {
