@@ -14,4 +14,12 @@ body {
 #nav{
     width: 20%;
     float: left;
+    height: 100%;
+
+}
+
+ul {
+       padding: 0;
+    max-height: 50em; /* 1.5 x 3 */
+    overflow-y: auto;
 }

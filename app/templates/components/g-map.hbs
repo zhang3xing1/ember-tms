@@ -1,4 +1,13 @@
 {{!-- {{yield}} --}}
-<div id='nav'  {{action 'hello' hi}}>
-    Hi, this is  {{hi}}
+<div id='nav'  >
+    <h3 {{action 'hello' hiMap}}>Hi, this is  {{hiMap}} </h3>
+    <div> {{locations.length}}
+        <ul>
+  {{!-- {{#each loc in locations}} --}}
+  {{#each locations as |loc index|}}
+    <li  {{action 'panTest' loc index}} >{{loc.latitude}}, {{loc.longitude}}</li>
+  {{/each}}
+</ul>
+
+    </div>
 </div>
