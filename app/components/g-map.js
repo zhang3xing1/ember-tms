@@ -1,7 +1,12 @@
+/* global google */
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-    // tagName: 'name-tag',
+    tagName: 'g-map',
+
+    didInsertElement: function() {
+        console.log('Component has been added to dom', this.$());
+    },
 
     // map: new google.maps.Map(document.getElementById('map'), {
     //     center: {
@@ -38,9 +43,30 @@ export default Ember.Component.extend({
     //     this._super();
     // },
 
+
+    pinSymbol: function() {
+        return {
+            path: "M27.648 -41.399q0 -3.816 -2.7 -6.516t-6.516 -2.7 -6.516 2.7 -2.7 6.516 2.7 6.516 6.516 2.7 6.516 -2.7 2.7 -6.516zm9.216 0q0 3.924 -1.188 6.444l-13.104 27.864q-0.576 1.188 -1.71 1.872t-2.43 0.684 -2.43 -0.684 -1.674 -1.872l-13.14 -27.864q-1.188 -2.52 -1.188 -6.444 0 -7.632 5.4 -13.032t13.032 -5.4 13.032 5.4 5.4 13.032z",
+            scale: 0.6,
+            strokeWeight: 0.2,
+            strokeColor: 'black',
+            strokeOpacity: 1,
+            fillColor: '#FF33AA',
+            fillOpacity: 0.85
+        };
+    },
+
+
     setup: Ember.on('init', function() {
         // do setup work ...
         console.log('init')
+
+        var contentString = '<div>Sigh</div>'
+        var infowindow = new google.maps.InfoWindow({
+            content: contentString,
+            maxWidth: 200
+        });
+
         var markers = []
         for (var i = 0; i < this.get('locations').length; i++) {
             var loc = this.get('locations')[i]
@@ -50,14 +76,56 @@ export default Ember.Component.extend({
                     lat: loc.latitude,
                     lng: loc.longitude
                 },
-                map: this.get('map')
+                map: this.get('map'),
+                icon: this.pinSymbol()
             });
 
-            markers[i] = marker
+
+            markers[i] = marker;
+
+            (function(index) {
+                markers[index] .addListener("click", function() {
+                    console.log("you clicked locaiton number " + index);
+                    console.log(markers[index].getPosition())
+                    infowindow.open(this.get('map'), markers[index] );
+                })
+            })(i);
+
+
+            // for(var i=0;i< immageArray.length; i++) {
+            //       imageArray[index].addEventListener("click", bindClick(i));
+            // }
+
+            // function bindClick(i) {
+            //    return function(){
+            //             console.log("you clicked region number " + i);
+            //           });
+            // }
+
+
+            // markers[i] = marker
+
+            // markers[i].addListener('click', function() {
+            //     console.log(marker.getPosition())
+            //     infowindow.open(this.get('map'), markers[i]);
+            // });
+
 
         };
 
         this.set('markers', markers)
+
+
+        // $('#map').click(function  () {
+        //     console.log('map.clicked!')
+        // })
+
+
+        // this.get('map').addListener('click', function(latLng) {
+        //     // 3 seconds after the center of the map has changed, pan back to the
+        //     // marker.
+        //     console.log(latLng)
+        // });
 
         // 37.4375032,127.1272715
 
@@ -77,7 +145,8 @@ export default Ember.Component.extend({
         //     map: this.get('map')
         // });
 
-        console.log(this.get('locations').length);
+        // console.log(this.get('locations').length);
+
         // function happens whenever init is called
         // but you don't have to call super because
         // you are not overriding init
@@ -116,8 +185,8 @@ export default Ember.Component.extend({
             var marker = this.get('markers')[index]
             console.log(marker)
 
-                marker.setAnimation(google.maps.Animation.BOUNCE);
-                this.stopAnimation(marker);
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+            this.stopAnimation(marker);
         }
     }
 });
