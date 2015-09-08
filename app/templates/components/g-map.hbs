@@ -1,11 +1,12 @@
 {{!-- {{yield}} --}}
 <div id='nav'  >
     <h3 {{action 'hello' hiMap}}>Hi, this is  {{hiMap}} </h3>
-    <div># of locations is  {{locations.length}}
+    <div># of locations is  {{locations_.length}}
+    <div># of unvisited  is  {{locations_.length}}</div>
         <ul>
   {{!-- {{#each loc in locations}} --}}
-  {{#each locations as |loc index|}}
-    <li  {{action 'panTest' loc index}} >{{index}}:{{loc.latitude}}|{{loc.longitude}}</li>
+  {{#each locations_ as |loc index|}}
+    <li  {{action 'panTest' loc index}} id='loc-{{index}}'>{{index}}:{{loc.latitude}}|{{loc.longitude}}</li>
   {{/each}}
 </ul>
 

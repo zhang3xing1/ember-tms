@@ -5,21 +5,52 @@ body {
     padding: 0;
 }
 
-#map {
+/*#map {
     height: 100%;
     width: 80%;
     float: right;
+}*/
+
+#map {
+    height: 100%;
+    width: 100%;
 }
 
-#nav{
+#nav {
     width: 20%;
+    left: 0;
+    top: 10px;
+    height: 100%;
+    position: absolute;
+    z-index: 5;
+    height: 100%;
+}
+
+
+/*#nav {
+    width: 30%;
     float: left;
     height: 100%;
-
-}
+}*/
 
 ul {
-       padding: 0;
-    max-height: 50em; /* 1.5 x 3 */
+    padding: 0;
+    max-height: 640px;
+    /* 1.5 x 3 */
     overflow-y: auto;
+}
+
+li {
+    background: yellow;
+    margin-top: 10px;
+}
+
+#panel {
+    background-color: #fff;
+    border: 1px solid #999;
+    left: 25%;
+    padding: 5px;
+    position: absolute;
+    top: 10px;
+    /*z-index: 5;*/
 }
