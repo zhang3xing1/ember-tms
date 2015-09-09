@@ -55,24 +55,18 @@ export default Ember.Component.extend({
     groupsOfPackage: [], // Array of GroupOfPackage
 
 
-    undeliveredGroups: Ember.computed(
+    numberOfDeliveredGroup: Ember.computed(
         function() {
-            var states = this.get('groupsOfPackage').map(
-                function(group) {
-                    return group.get('isDelivered')
-                })
-            console.log(states)
-            console.log(`groupsOfPackage.length: ${states.length}`)
-            return states.reduce(
-                function(_, numberOfUndelivered, index, _self) {
-                    var isDelivered = _self[index]
+            return this.get('groupsOfPackage').reduce(
+                function(previousResult, numberOfDelivered, index, _self) {
+                    var isDelivered = _self[index].get('isDelivered')
                     if (isDelivered) {
-                        console.log(index)
-                        return 0 + numberOfUndelivered
-                    } else {
-                        // console.log(index)
-                        return 1 + numberOfUndelivered
+                        numberOfDelivered = previousResult + 1
+                    }else{
+                        numberOfDelivered = previousResult
                     }
+                    console.log(numberOfDelivered)
+                    return numberOfDelivered
                 }, 0)
 
         }),
@@ -164,9 +158,6 @@ export default Ember.Component.extend({
         // console.log(this.get('groupsOfPackage')[2].get('stateOfPackages'))
         // console.log(typeof(this.get('groupsOfPackage')[2].get('stateOfPackages')))
 
-
-
-
         var contentString = '<div>Sigh</div>'
         var infowindow = new google.maps.InfoWindow({
             content: contentString,
@@ -199,60 +190,11 @@ export default Ember.Component.extend({
                 })
             })(i);
 
-
-            // for(var i=0;i< immageArray.length; i++) {
-            //       imageArray[index].addEventListener("click", bindClick(i));
-            // }
-
-            // function bindClick(i) {
-            //    return function(){
-            //             console.log("you clicked region number " + i);
-            //           });
-            // }
-
-
-            // markers[i] = marker
-
-            // markers[i].addListener('click', function() {
-            //     console.log(marker.getPosition())
-            //     infowindow.open(this.get('map'), markers[i]);
-            // });
-
-
         };
 
         this.set('markers', markers)
 
-
-        // $('#map').click(function  () {
-        //     console.log('map.clicked!')
-        // })
-
-
-        // this.get('map').addListener('click', function(latLng) {
-        //     // 3 seconds after the center of the map has changed, pan back to the
-        //     // marker.
-        //     console.log(latLng)
-        // });
-
-        // 37.4375032,127.1272715
-
-
-        // console.log(point.latitude)
-        // console.log(point.longitude)
-        // this.get('map').setCenter({
-        //     lat: 37.4375032,
-        //     lng: 127.1272715
-        // })
-
-        // var marker = new google.maps.Marker({
-        //     position: {
-        //         lat: 37.4375032,
-        //         lng: 127.1272715
-        //     },
-        //     map: this.get('map')
-        // });
-
+        console.log(this.get('DeliveredGroups'))
         // console.log(this.get('locations').length);
 
         // function happens whenever init is called
@@ -277,7 +219,7 @@ export default Ember.Component.extend({
             //     lat: 37.438568,
             //     lng: 127.128896
             // })
-            console.log(this.get('undeliveredGroups'))
+            console.log(this.get('numberOfDeliveredGroup'))
         },
 
         panTest: function(point, index) {

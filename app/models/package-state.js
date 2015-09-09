@@ -4,5 +4,5 @@ export default Ember.Object.extend({
   id: '',
   SequenceOfAlgorithm: -1,
   SequenceOfDelivered: -1,
-  isDelivered: true,
+  isDelivered: false,
 });

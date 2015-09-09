@@ -25,7 +25,7 @@ module.exports = function(environment) {
     ENV.contentSecurityPolicy = {
         'default-src': "'none'",
         'script-src': "'self' 'unsafe-eval' *.googleapis.com maps.gstatic.com *.google.com https://maps.gstatic.com https://maps.googleapis.com",
-        'font-src': "'self' fonts.gstatic.com *.lug.ustc.edu.cn *.google.com ",
+        'font-src': "'self' fonts.gstatic.com *.lug.ustc.edu.cn *.google.com https://fonts.gstatic.com",
         // 'http://fonts.lug.ustc.edu.cn/
         'frame-src': "'self' fonts.gstatic.com fonts.lug.ustc.edu.cn *.google.com https://www.google.com",
         'connect-src': "'self' maps.gstatic.com *.google.com",

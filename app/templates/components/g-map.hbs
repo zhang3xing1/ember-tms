@@ -2,11 +2,14 @@
 <div id='nav'  >
     <h3 {{action 'hello' hiMap}}>Hi, this is  {{hiMap}} </h3>
     <div># of locations is  {{locations_.length}}
-    <div># of unvisited  is  {{locations_.length}}</div>
+    <div># of delivered  is  {{numberOfDeliveredGroup}}</div>
         <ul>
   {{!-- {{#each loc in locations}} --}}
   {{#each locations_ as |loc index|}}
-    <li  {{action 'panTest' loc index}} id='loc-{{index}}'>{{index}}:{{loc.latitude}}|{{loc.longitude}}</li>
+    <li id='loc-{{index}}'>
+    <a href="#" href="#" {{action 'panTest' loc index}}> {{index}}:{{loc.latitude}}|{{loc.longitude}} </a>
+
+    </li>
   {{/each}}
 </ul>
 
