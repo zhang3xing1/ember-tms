@@ -5,7 +5,11 @@ export default Ember.Object.extend({
   addr1: '',
   addr2: '',
   invoicenumber: '',
-  ordernumber: ''
+  ordernumber: '',
+  // state list
+  sequenceOfAlgorithm: -1,
+  sequenceOfDelivered: -1,
+  isDelivered: false,
 });
 
                     // "name": "김영주",

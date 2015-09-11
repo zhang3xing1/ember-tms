@@ -2,30 +2,17 @@
 import Ember from 'ember';
 import GroupOfPackage from '../models/group-of-package';
 import PackageInfo from '../models/package-info';
-import PackageState from '../models/package-state';
+import _ from 'lodash/lodash';
 
 export default Ember.Component.extend({
     tagName: 'g-map',
 
-    // didInsertElement: function() {
-    //     console.log('Component has been added to dom', this.$());
-    // },
-
-    // map: new google.maps.Map(document.getElementById('map'), {
-    //     center: {
-    //         lat: 34.397,
-    //         lng: 150.644
-    //     },
-    //     zoom: 3
-    // }),
-    // center: new google.maps.LatLng(-34.397, 150.644),
+    didInsertElement: function() {
+        // this.$().foundation(); //or Ember.$(document).foundation();
+        $('.ui.dropdown').dropdown()
+    },
 
     hiMap: 'tms-map',
-
-    // locations:  function () {
-    //     // body...
-    //     this.get('locations')
-    // },
 
     // init: function() {
     //     // do initialization work...
@@ -46,14 +33,11 @@ export default Ember.Component.extend({
     //     this._super();
     // },
 
-
     basicInfo_: Ember.computed(function() {
         return this._objToStrMap(this.get('packageListInfo'))
     }),
 
-
     groupsOfPackage: [], // Array of GroupOfPackage
-
 
     numberOfDeliveredGroup: Ember.computed(
         function() {
@@ -62,7 +46,7 @@ export default Ember.Component.extend({
                     var isDelivered = _self[index].get('isDelivered')
                     if (isDelivered) {
                         numberOfDelivered = previousResult + 1
-                    }else{
+                    } else {
                         numberOfDelivered = previousResult
                     }
                     console.log(numberOfDelivered)
@@ -71,20 +55,25 @@ export default Ember.Component.extend({
 
         }),
 
-
-    locations_: Ember.computed(function() {
-        var locArr = []
-        for (var [key, value] of this.get('basicInfo_').entries()) {
-            // console.log(key + " = " + value);
-            var lngLat = key.split(':')
-            locArr.push({
-                latitude: parseFloat(lngLat[0]),
-                longitude: parseFloat(lngLat[1])
+    markers: Ember.computed(function() {
+        var map = this.get('map')
+        var pinSymbol_ = this.get('pinSymbol_')
+        return this.get('groupsOfPackage').map(function(group) {
+            var marker = new google.maps.Marker({
+                position: {
+                    lat: group.latitude,
+                    lng: group.longitude
+                },
+                map: map,
+                // icon: this.pinSymbol()
+                icon: pinSymbol_(group.count)
             })
-        }
-        return locArr
+            marker.addListener("click", function() {
+                console.log("you clicked group title is " + group.title);
+            })
+            return marker
+        })
     }),
-
 
     _objToStrMap: function(obj) {
         let strMap = new Map();
@@ -94,7 +83,11 @@ export default Ember.Component.extend({
         return strMap;
     },
 
-
+    nextGroupOfPackage: Ember.computed(function() {
+        return _.first(this.get('groupsOfPackage'), function(_group) {
+            return !_group.get('packages').get('isDelivered')
+        }).get('packages')
+    }),
 
     pinSymbol: function() {
         return {
@@ -108,95 +101,57 @@ export default Ember.Component.extend({
         };
     },
 
+    pinSymbol_: function(i) {
+
+        function pad(num, size) {
+            var s = "000000000" + num;
+            return s.substr(s.length - size);
+        }
+
+        return "http://google-maps-icons.googlecode.com/files/red" + pad(i, 2) + ".png";
+
+    },
 
     setup: Ember.on('init', function() {
         // do setup work ...
-        console.log('init')
-
-        // console.log(this.get('basicInfo_'))
-
-        // Array.apply(null, Array(5)).map(Number.prototype.valueOf,0);
-        // var numberOfGroups = this.get('basicInfo_').size
-
-
-
-        // this.set('groupsOfPackage',
-        //     Array.apply(null, Array(numberOfGroups)).map(
-        //         function() {
-        //             return new Map()
-        //         }
-        //     ))
-
-
         for (var [key, value] of this.get('basicInfo_').entries()) {
             var singleGroupInfo = GroupOfPackage.create({
-                zip: value[0].zip,
                 id: key,
-                infoOfPackages: value.map(function(item) {
+                zip: value[0].zip,
+                packages: value.map(function(item) {
                     return PackageInfo.create({
                         name: item.name,
                         addr1: item.addr1,
                         addr2: item.addr2,
+                        latitude: parseFloat(item.latitude),
+                        longitude: parseFloat(item.longitude),
                         invoicenumber: item.invoicenumber,
                         ordernumber: item.ordernumber,
-                        parent_id: key
+                        group_id: key
                     })
                 }),
-                stateOfPackages: value.map(function(item) {
-                    return PackageState.create({
-                        parent_id: key,
-                        invoicenumber: item.invoicenumber
-                    })
-                })
-
+                count: value.length,
+                title: _.uniq(value.map(function(item) {
+                    return item.name
+                })).join(' '),
+                latitude: parseFloat(value[0].latitude),
+                longitude: parseFloat(value[0].longitude)
             })
             this.get('groupsOfPackage').push(singleGroupInfo)
-
         }
 
-        // console.log(this.get('groupsOfPackage')[0].get('infoOfPackages'))[0]
-        // console.log(this.get('groupsOfPackage')[2].get('stateOfPackages'))
-        // console.log(typeof(this.get('groupsOfPackage')[2].get('stateOfPackages')))
+        this.get('markers')
 
-        var contentString = '<div>Sigh</div>'
-        var infowindow = new google.maps.InfoWindow({
-            content: contentString,
-            maxWidth: 200
+        this.get('map').setCenter({
+                lat: this.get('groupsOfPackage')[1].latitude,
+                lng: this.get('groupsOfPackage')[1].longitude
+            })
+            // console.log(this.get('locations').length);
+
+        google.maps.event.addListener(this.get('map'), 'click', function(event) {
+            console.log(`${event.latLng.lat()}, ${event.latLng.lng()}`);
+            // alert("Latitude: " + event.latLng.lat() + " " + ", longitude: " + event.latLng.lng());
         });
-
-        var markers = []
-        console.log(this.get('locations_'))
-        for (var i = 0; i < this.get('locations_').length; i++) {
-            var loc = this.get('locations_')[i]
-
-            var marker = new google.maps.Marker({
-                position: {
-                    lat: loc.latitude,
-                    lng: loc.longitude
-                },
-                map: this.get('map'),
-                icon: this.pinSymbol()
-            });
-
-
-            markers[i] = marker;
-
-            (function(index) {
-                markers[index].addListener("click", function() {
-                    $(`#loc-${index}`).css('background', 'red')
-                    console.log("you clicked locaiton number " + index);
-                    // console.log(markers[index].getPosition())
-                    infowindow.open(this.get('map'), markers[index]);
-                })
-            })(i);
-
-        };
-
-        this.set('markers', markers)
-
-        console.log(this.get('DeliveredGroups'))
-        // console.log(this.get('locations').length);
-
         // function happens whenever init is called
         // but you don't have to call super because
         // you are not overriding init

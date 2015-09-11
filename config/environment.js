@@ -25,11 +25,11 @@ module.exports = function(environment) {
     ENV.contentSecurityPolicy = {
         'default-src': "'none'",
         'script-src': "'self' 'unsafe-eval' *.googleapis.com maps.gstatic.com *.google.com https://maps.gstatic.com https://maps.googleapis.com",
-        'font-src': "'self' fonts.gstatic.com *.lug.ustc.edu.cn *.google.com https://fonts.gstatic.com",
+        'font-src': "'self'  data: fonts.gstatic.com *.lug.ustc.edu.cn *.google.com https://fonts.gstatic.com",
         // 'http://fonts.lug.ustc.edu.cn/
         'frame-src': "'self' fonts.gstatic.com fonts.lug.ustc.edu.cn *.google.com https://www.google.com",
         'connect-src': "'self' maps.gstatic.com *.google.com",
-        'img-src': "'self' *.google.com maps.googleapis.com *.gstatic.com https://mts1.google.com https://mts0.google.com https://maps.gstatic.com https://khms1.google.com https://maps.googleapis.com https://csi.gstatic.com https://khms0.google.com",
+        'img-src': "'self' *.google.com maps.googleapis.com *.gstatic.com https://mts1.google.com https://mts0.google.com https://maps.gstatic.com https://khms1.google.com https://maps.googleapis.com https://csi.gstatic.com https://khms0.google.com http://google-maps-icons.googlecode.com",
         // 'img-src': "'self' *.googleapis.com maps.gstatic.com csi.gstatic.com *.google.com",
         'style-src': "'self' 'unsafe-inline' fonts.googleapis.com maps.gstatic.com *.google.com *.lug.ustc.edu.cn https://fonts.googleapis.com"
     };

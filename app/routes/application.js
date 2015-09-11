@@ -14,19 +14,6 @@ export default Ember.Route.extend({
             hi3: 'foobar',
 
             packageListInfo: {
-                "37.43935876:127.1212032": [{
-                    "name": "주미선",
-                    "addr1": "경기도 성남시 수정구 수진2동 삼정그린뷰",
-                    "addr2": "102동 503호",
-                    "longitude": "127.1212032",
-                    "latitude": "37.43935876",
-                    "zip": "461728",
-                    "invoicenumber": "10150281628502",
-                    "ordernumber": "385291092",
-                    "deliverystatus": "CAMP_ARRIVED",
-                    "targetworkplaceid": "\\N",
-                    "campid": "60"
-                }],
                 "37.43890643:127.1235116": [{
                     "name": "김영주",
                     "addr1": "경기 성남시 수정구 수진2동 삼부아파트",
@@ -48,6 +35,19 @@ export default Ember.Route.extend({
                     "zip": "461707",
                     "invoicenumber": "10150281664202",
                     "ordernumber": "385364634",
+                    "deliverystatus": "CAMP_ARRIVED",
+                    "targetworkplaceid": "\\N",
+                    "campid": "60"
+                }],
+                "37.43935876:127.1212032": [{
+                    "name": "주미선",
+                    "addr1": "경기도 성남시 수정구 수진2동 삼정그린뷰",
+                    "addr2": "102동 503호",
+                    "longitude": "127.1212032",
+                    "latitude": "37.43935876",
+                    "zip": "461728",
+                    "invoicenumber": "10150281628502",
+                    "ordernumber": "385291092",
                     "deliverystatus": "CAMP_ARRIVED",
                     "targetworkplaceid": "\\N",
                     "campid": "60"
