@@ -6,11 +6,17 @@ import _ from 'lodash/lodash';
 
 
 GroupOfParcel.reopen({
-    // override `say` to add an ! at the end
-    isDelivered_: Ember.computed('parcels', function() {
-        return _.reduce(this.get('parcels'), function(result, parcel) {
+    // isDelivered_: function() {
+    //     return this.get('parcels').reduce(function(result, parcel) {
+    //         console.log(parcel.get('isDelivered'))
+    //         return result && parcel.get('isDelivered');
+    //     }, true);
+    // }.property('parcels.@each.isDelivered'),
+
+    isDelivered_: Ember.computed('parcels.@each.isDelivered', function() {
+        return this.get('parcels').reduce(function(result, parcel) {
             console.log(parcel.get('isDelivered'))
-            return result && parcel.get('isDelivered');
+            return result && parcel.get('isDelivered')
         }, true)
     })
 });
@@ -43,9 +49,9 @@ export default Ember.Component.extend({
     //     this._super();
     // },
 
-    basicInfo_: Ember.computed(function() {
-        return this._objToStrMap(this.get('packageListInfo'))
-    }),
+    // basicInfo_: Ember.computed(function() {
+    //     return this._objToStrMap(this.get('packageListInfo'))
+    // }),
 
     groupsOfParcel: Ember.A(), // Array of GroupOfParcel
 
@@ -142,17 +148,17 @@ export default Ember.Component.extend({
     },
     setup: Ember.on('init', function() {
         // do setup work ...
-        for (var [key, value] of this.get('basicInfo_').entries()) {
+        _.forEach(this.get('parcelListInfo'), function(rawParcel, key) {
             var singleGroupInfo = GroupOfParcel.create({
                 id: key,
-                zip: value[0].zip,
-                count: value.length,
-                title: _.uniq(value.map(function(item) {
+                zip: rawParcel[0].zip,
+                count: rawParcel.length,
+                title: _.uniq(rawParcel.map(function(item) {
                     return item.name
                 })).join(' '),
-                latitude: parseFloat(value[0].latitude),
-                longitude: parseFloat(value[0].longitude),
-                parcels: value.map(function(item) {
+                latitude: parseFloat(rawParcel[0].latitude),
+                longitude: parseFloat(rawParcel[0].longitude),
+                parcels: Ember.A(rawParcel.map(function(item) {
                     return Parcel.create({
                         name: item.name,
                         addr1: item.addr1,
@@ -164,10 +170,10 @@ export default Ember.Component.extend({
                         group_id: key,
                         isDelivered: false
                     })
-                }),
+                })),
             })
             this.get('groupsOfParcel').pushObject(singleGroupInfo)
-        }
+        }, this)
 
         this.get('markers')
 
