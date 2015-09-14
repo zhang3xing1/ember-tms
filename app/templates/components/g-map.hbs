@@ -3,14 +3,14 @@
 <div class="ui vertical menu">
   <a class="active teal item">
     Delivered
-    <div class="ui teal pointing left label">{{numberOfDeliveredGroup}} / {{groupsOfPackage.length}}</div>
+    <div class="ui teal pointing left label">{{numberOfDeliveredGroup}} / {{groupsOfParcel.length}}/ {{cardParcel.length}}</div>
   </a>
   <div class="ui dropdown item scrolling">
     Customers <i class="dropdown icon "></i>
     <div class="menu">
       {{!-- <div class="item">Choice 1</div> --}}
-       {{#each groupsOfPackage as |loc index|}}
-        <div class="item" {{action 'panTest' loc index}} >{{index}}:{{loc.title}}</div>
+       {{#each groupsOfParcel as |group index|}}
+        <div class="item" {{action 'groupTapped' group index}} >{{index}}:{{group.title}}</div>
         {{/each}}
     </div>
   </div>
@@ -23,25 +23,29 @@
 </div>
 
 <div class="ui cards">
-   {{#each nextGroupOfPackage as |package index|}}
+
+   {{#each cardParcel as |parcel index|}}
 
   <div class="card">
     <div class="content">
       {{!-- <img class="right floated mini ui image" src="/images/avatar/large/elliot.jpg"> --}}
       <div class="header">
-        {{package.name}}
+        {{parcel.name}}
       </div>
       <div class="meta">
-        {{package.invoicenumber}}
+        {{parcel.invoicenumber}}
       </div>
       <div class="description">
-        {{package.addr1}}  {{package.addr2}}
+        {{parcel.addr1}}  {{parcel.addr2}}
       </div>
     </div>
     <div class="extra content">
       <div class="ui two buttons">
-        <div class="ui basic green button">Confirm</div>
-        <div class="ui basic red button">Undo</div>
+        {{#if parcel.isDelivered}}
+          <div class="ui basic red button" {{action 'cardUndo' parcel}}>Undo</div>
+        {{else}}
+          <div class="ui basic green button"  {{action 'cardConfirmed' parcel}} >Confirm</div>
+        {{/if}}
       </div>
     </div>
   </div>

@@ -9,7 +9,8 @@ export default Ember.Object.extend({
   // state list
   sequenceOfAlgorithm: -1,
   sequenceOfDelivered: -1,
-  isDelivered: false,
+  isDelivered: false
+
 });
 
                     // "name": "김영주",

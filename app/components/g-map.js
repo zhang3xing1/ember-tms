@@ -1,8 +1,20 @@
 /* global google */
 import Ember from 'ember';
-import GroupOfPackage from '../models/group-of-package';
-import PackageInfo from '../models/package-info';
+import GroupOfParcel from '../models/group-of-parcel';
+import Parcel from '../models/parcel';
 import _ from 'lodash/lodash';
+
+
+GroupOfParcel.reopen({
+    // override `say` to add an ! at the end
+    isDelivered_: Ember.computed('parcels', function() {
+        return _.reduce(this.get('parcels'), function(result, parcel) {
+            console.log(parcel.get('isDelivered'))
+            return result && parcel.get('isDelivered');
+        }, true)
+    })
+});
+
 
 export default Ember.Component.extend({
     tagName: 'g-map',
@@ -26,8 +38,6 @@ export default Ember.Component.extend({
     //     // further up in the hierarchy get called
 
 
-    //     console.log('init')
-    //     console.log(this.locations.length)
 
     //     // call super to initialize other init methods 
     //     this._super();
@@ -37,11 +47,11 @@ export default Ember.Component.extend({
         return this._objToStrMap(this.get('packageListInfo'))
     }),
 
-    groupsOfPackage: [], // Array of GroupOfPackage
+    groupsOfParcel: Ember.A(), // Array of GroupOfParcel
 
     numberOfDeliveredGroup: Ember.computed(
         function() {
-            return this.get('groupsOfPackage').reduce(
+            return this.get('groupsOfParcel').reduce(
                 function(previousResult, numberOfDelivered, index, _self) {
                     var isDelivered = _self[index].get('isDelivered')
                     if (isDelivered) {
@@ -49,7 +59,6 @@ export default Ember.Component.extend({
                     } else {
                         numberOfDelivered = previousResult
                     }
-                    console.log(numberOfDelivered)
                     return numberOfDelivered
                 }, 0)
 
@@ -58,22 +67,37 @@ export default Ember.Component.extend({
     markers: Ember.computed(function() {
         var map = this.get('map')
         var pinSymbol_ = this.get('pinSymbol_')
-        return this.get('groupsOfPackage').map(function(group) {
+        return this.get('groupsOfParcel').map(function(group) {
             var marker = new google.maps.Marker({
                 position: {
                     lat: group.latitude,
                     lng: group.longitude
                 },
-                map: map,
-                // icon: this.pinSymbol()
-                icon: pinSymbol_(group.count)
+                map: map
             })
+
+            if (group.get('isDelivered')) {
+                marker.set('icon', pinSymbol_(group.count, 'green'))
+            } else {
+                marker.set('icon', pinSymbol_(group.count, 'red'))
+            }
+
+            var that = this
             marker.addListener("click", function() {
-                console.log("you clicked group title is " + group.title);
+                console.log("you clicked group title is " + group.title)
+                that.send('updateCards', group)
             })
             return marker
-        })
+        }, this)
     }),
+
+    cardParcel: Ember.A(),
+
+    _clickMarkerToShowCard: function(group_id) {
+        return _.find(this.get('groupsOfParcel'), function(group) {
+            return group.id = group_id
+        })
+    },
 
     _objToStrMap: function(obj) {
         let strMap = new Map();
@@ -83,10 +107,10 @@ export default Ember.Component.extend({
         return strMap;
     },
 
-    nextGroupOfPackage: Ember.computed(function() {
-        return _.first(this.get('groupsOfPackage'), function(_group) {
-            return !_group.get('packages').get('isDelivered')
-        }).get('packages')
+    nextGroupOfParcel: Ember.computed(function() {
+        return _.first(this.get('groupsOfParcel'), function(_group) {
+            return !_group.get('parcels').get('isDelivered')
+        }).get('parcels')
     }),
 
     pinSymbol: function() {
@@ -101,25 +125,35 @@ export default Ember.Component.extend({
         };
     },
 
-    pinSymbol_: function(i) {
-
+    pinSymbol_: function(i, color) {
         function pad(num, size) {
             var s = "000000000" + num;
             return s.substr(s.length - size);
         }
 
-        return "http://google-maps-icons.googlecode.com/files/red" + pad(i, 2) + ".png";
+        return "http://google-maps-icons.googlecode.com/files/" + color + pad(i, 2) + ".png";
 
     },
 
+    _fromGroup: function(group_id) {
+        return _.find(this.get('groupsOfParcel'), function(group) {
+            return group.id == group_id
+        })
+    },
     setup: Ember.on('init', function() {
         // do setup work ...
         for (var [key, value] of this.get('basicInfo_').entries()) {
-            var singleGroupInfo = GroupOfPackage.create({
+            var singleGroupInfo = GroupOfParcel.create({
                 id: key,
                 zip: value[0].zip,
-                packages: value.map(function(item) {
-                    return PackageInfo.create({
+                count: value.length,
+                title: _.uniq(value.map(function(item) {
+                    return item.name
+                })).join(' '),
+                latitude: parseFloat(value[0].latitude),
+                longitude: parseFloat(value[0].longitude),
+                parcels: value.map(function(item) {
+                    return Parcel.create({
                         name: item.name,
                         addr1: item.addr1,
                         addr2: item.addr2,
@@ -127,30 +161,24 @@ export default Ember.Component.extend({
                         longitude: parseFloat(item.longitude),
                         invoicenumber: item.invoicenumber,
                         ordernumber: item.ordernumber,
-                        group_id: key
+                        group_id: key,
+                        isDelivered: false
                     })
                 }),
-                count: value.length,
-                title: _.uniq(value.map(function(item) {
-                    return item.name
-                })).join(' '),
-                latitude: parseFloat(value[0].latitude),
-                longitude: parseFloat(value[0].longitude)
             })
-            this.get('groupsOfPackage').push(singleGroupInfo)
+            this.get('groupsOfParcel').pushObject(singleGroupInfo)
         }
 
         this.get('markers')
 
         this.get('map').setCenter({
-                lat: this.get('groupsOfPackage')[1].latitude,
-                lng: this.get('groupsOfPackage')[1].longitude
-            })
-            // console.log(this.get('locations').length);
+            lat: this.get('groupsOfParcel')[1].latitude,
+            lng: this.get('groupsOfParcel')[1].longitude
+        })
+
 
         google.maps.event.addListener(this.get('map'), 'click', function(event) {
             console.log(`${event.latLng.lat()}, ${event.latLng.lng()}`);
-            // alert("Latitude: " + event.latLng.lat() + " " + ", longitude: " + event.latLng.lng());
         });
         // function happens whenever init is called
         // but you don't have to call super because
@@ -168,30 +196,31 @@ export default Ember.Component.extend({
 
     actions: {
         hello: function(hi) {
-            // alert(hi + this.get('locations').length);
-
-            // this.get('map').setCenter({
-            //     lat: 37.438568,
-            //     lng: 127.128896
-            // })
             console.log(this.get('numberOfDeliveredGroup'))
         },
 
-        panTest: function(point, index) {
-            console.log(index)
-                // console.log(point.longitude)
+        updateCards: function(group) {
+            this.set('cardParcel', group.get('parcels'))
+        },
 
+        groupTapped: function(group, index) {
             this.get('map').setCenter({
-                lat: point.latitude,
-                lng: point.longitude
+                lat: group.latitude,
+                lng: group.longitude
             })
-
-
-            var marker = this.get('markers')[index]
-            console.log(marker)
-
-            marker.setAnimation(google.maps.Animation.BOUNCE);
-            this.stopAnimation(marker);
+            this.set('cardParcel', group.get('parcels'))
+        },
+        cardConfirmed: function(parcel) {
+            parcel.set('isDelivered', true)
+            var groupIncludingCard = this._fromGroup(parcel.group_id)
+            console.log(this._fromGroup(parcel.group_id))
+            console.log(`groupIncludingCard: ${this._fromGroup(parcel.group_id).get('isDelivered_')}`)
+        },
+        cardUndo: function(parcel) {
+            parcel.set('isDelivered', false)
+            var groupIncludingCard = this._fromGroup(parcel.group_id)
+            console.log(this._fromGroup(parcel.group_id))
+            console.log(`groupIncludingCard: ${this._fromGroup(parcel.group_id).get('isDelivered_')}`)
         }
     }
 });
