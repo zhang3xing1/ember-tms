@@ -4,5 +4,6 @@ export default Ember.Object.extend({
     id: '',
     zip: '',
     infoOfPackages: [],
-    stateOfPackages: []
+    stateOfPackages: [],
+    index: -1
 });
