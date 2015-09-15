@@ -232,8 +232,9 @@ export default Ember.Component.extend({
             }, this)
             if (group.get('isAllDelivered')) {
                 console.log(marker)
-                marker.set('icon', pinSymbol_(group.get('countOfUndelivered'), 'white'))
+                marker.setMap(null)
             } else {
+                marker.setMap(this.get('map'))
                 marker.set('icon', pinSymbol_(group.get('countOfUndelivered'), 'red'))
             }
         },
@@ -245,7 +246,6 @@ export default Ember.Component.extend({
             }, this)
             marker.set('icon', pinSymbol_(group.get('countOfUndelivered'), 'green'))
             setTimeout(function(that) {
-                marker.setAnimation(null);
                 that.send('_colorMarker', that._fromGroup(group.id))
             }, 1000, this);
 
