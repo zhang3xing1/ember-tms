@@ -91,8 +91,8 @@ export default Ember.Component.extend({
 
         var that = this
         marker.addListener("click", function() {
-                console.log("you clicked group title is " + group.title)
-                that.send('updateCards', group)
+                // console.log("you clicked group title is " + group.title)
+                that.send('_updateCards', group)
                 that.send('_highlightMarker', group)
             })
             // console.log(marker)
@@ -101,6 +101,8 @@ export default Ember.Component.extend({
     }),
 
     cardParcel: Ember.A(),
+
+    tapped: {longitude: 0, latitude: 0},
 
     _clickMarkerToShowCard: function(group_id) {
         return _.find(this.get('groupsOfParcel'), function(group) {
@@ -178,8 +180,11 @@ export default Ember.Component.extend({
             lng: this.get('groupsOfParcel')[1].longitude
         })
 
+
+        var that = this
         google.maps.event.addListener(this.get('map'), 'click', function(event) {
-            console.log(`${event.latLng.lat()}, ${event.latLng.lng()}`);
+            that.set('tapped', {longitude: event.latLng.lng().toFixed(5), latitude: event.latLng.lat().toFixed(5)})
+            console.log(`${event.latLng.lng()} ${event.latLng.lat()}`);
         })
 
         this.send('_colorMarkers', this.get('map'))
@@ -202,7 +207,8 @@ export default Ember.Component.extend({
             console.log(this.get('numberOfDeliveredGroup'))
         },
 
-        updateCards: function(group) {
+        _updateCards: function(group) {
+            $("#cards").show()
             this.set('cardParcel', group.get('parcels'))
         },
 
@@ -211,7 +217,7 @@ export default Ember.Component.extend({
                 lat: group.latitude,
                 lng: group.longitude
             })
-            this.set('cardParcel', group.get('parcels'))
+            this.send('_updateCards', group)
             this.send('_highlightMarker', group)
         },
         cardConfirmed: function(parcel) {
@@ -223,6 +229,10 @@ export default Ember.Component.extend({
             parcel.set('isDelivered', false)
             this.send('_highlightMarker', this._fromGroup(parcel.group_id))
             // this.send('_colorMarker', this._fromGroup(parcel.group_id))
+        },
+
+        home: function() {
+            $("#cards").hide()
         },
 
         _colorMarker: function(group) {

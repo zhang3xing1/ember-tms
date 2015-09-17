@@ -20,3 +20,14 @@ body {
     height: 100%;
 }
 
+#cards{
+    width: 60%;
+    right: 0;
+    top: 10px;
+    position: absolute;
+    z-index: 5;
+    max-height: 100%;
+    overflow-y: scroll;
+}
+
+
