@@ -16,18 +16,26 @@
     </div>
     <a class="item">
       Longitude
-      <div class="ui label">{{tapped.longitude}}</div>
+      <div class="ui label">{{groupTapped.longitude}}</div>
     </a>
     <a class="item">
       Latitude
-      <div class="ui label">{{tapped.latitude}}</div>
+      <div class="ui label">{{groupTapped.latitude}}</div>
     </a>
+    <div class="ui small dropdown item scrolling">
+      View Model <i class="dropdown icon "></i>
+      <div class="menu">
+          <div class="item" >Overall</div>
+          <div class="item" >Zone</div>
+          {{!-- <div class="item" >Overall</div> --}}
+      </div>
+    </div>
     <div class="ui small dropdown item scrolling">
       Zones <i class="dropdown icon "></i>
       <div class="menu">
         {{!-- <div class="item">Choice 1</div> --}}
-         {{#each zonePolygons as |group index|}}
-          <div class="item" {{action 'groupTapped' group index}} >{{index}}:{{group.title}}</div>
+         {{#each zonePolygons as |zone index|}}
+          <div class="item" {{action 'zoneTapped' zone index}} >{{zone.name}}</div>
           {{/each}}
       </div>
     </div>
@@ -41,38 +49,57 @@
       </div>
     </div>
   </div>
-</div>
 
-
-
-  <div id="cards" class="ui cards">
-
-     {{#each cardParcel as |parcel index|}}
-
-    <div class="card">
-      <div class="content">
-        {{!-- <img class="right floated mini ui image" src="/images/avatar/large/elliot.jpg"> --}}
-        <div class="header">
-          {{parcel.name}}
-        </div>
-        <div class="meta">
-          {{parcel.invoicenumber}}
-        </div>
-        <div class="description">
-          {{parcel.addr1}}  {{parcel.addr2}}
-        </div>
+  <div class="ui small olive card" id='zone'>
+    <div class="content">
+      <i class="right floated save icon"></i>
+      <div class="header">{{zoneTapped.name}}</div>
+      <div class="meta">
+{{!--         <span class="right floated time">dummy</span>
+        <span class="category">dummy</span> --}}
       </div>
-      <div class="extra content">
-        <div class="ui two buttons">
-          {{#if parcel.isDelivered}}
-            <div class="ui basic red button" {{action 'cardUndo' parcel}}>Undo</div>
-          {{else}}
-            <div class="ui basic green button"  {{action 'cardConfirmed' parcel}} >Confirm</div>
-          {{/if}}
-        </div>
+      <div class="description">
+        {{!-- debug block info --}}
+
+        {{!-- {{#each zoneTapped.path as |vertex  index|}} --}}
+        {{!-- {<span>latitude: '{{vertex.latitude}}'</span>,<span>longitude: '{{vertex.longitude}}'</span>}, --}}
+        {{!-- {{/each}} --}}
+
+
+
       </div>
     </div>
-    {{/each}}
   </div>
+
+</div>
+
+<div id="cards" class="ui cards">
+
+   {{#each cardParcel as |parcel index|}}
+
+  <div class="card">
+    <div class="content">
+      <div class="header">
+        {{parcel.name}}
+      </div>
+      <div class="meta">
+        {{parcel.invoicenumber}}
+      </div>
+      <div class="description">
+        {{parcel.addr1}}  {{parcel.addr2}}
+      </div>
+    </div>
+    <div class="extra content">
+      <div class="ui two buttons">
+        {{#if parcel.isDelivered}}
+          <div class="ui basic red button" {{action 'cardUndo' parcel}}>Cancle</div>
+        {{else}}
+          <div class="ui basic green button"  {{action 'cardConfirmed' parcel}} >Confirm</div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+  {{/each}}
+</div>
 
 {{!-- <h3 {{action 'hello' hiMap}}>Hi, this is  {{hiMap}} </h3> --}}

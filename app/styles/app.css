@@ -30,4 +30,9 @@ body {
     overflow-y: scroll;
 }
 
+#zone{
+    max-height:  50%;
+    overflow-y: scroll;
+}
+
 

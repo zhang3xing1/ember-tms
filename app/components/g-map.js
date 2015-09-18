@@ -1,10 +1,11 @@
 /* global google */
 import Ember from 'ember';
-import GroupOfParcel from '../models/group-of-parcel';
+import ParcelCollection from '../models/parcel_collection';
 import Parcel from '../models/parcel';
+import Zone from '../models/zone';
 import _ from 'lodash/lodash';
 
-GroupOfParcel.reopen({
+ParcelCollection.reopen({
     // isAllDelivered: function() {
     //     return this.get('parcels').reduce(function(result, parcel) {
     //         console.log(parcel.get('isDelivered'))
@@ -51,7 +52,7 @@ export default Ember.Component.extend({
     //     this._super();
     // },
 
-    groupsOfParcel: Ember.A(), // Array of GroupOfParcel
+    groupsOfParcel: Ember.A(), // Array of ParcelCollection
 
     numberOfDeliveredGroup: Ember.computed(
         function() {
@@ -102,9 +103,13 @@ export default Ember.Component.extend({
 
     cardParcel: Ember.A(),
 
-    tapped: {
+    groupTapped: {
         longitude: 0,
         latitude: 0
+    },
+
+    zoneTapped: {
+        polygon: ''
     },
 
     zonePolygons: Ember.A(),
@@ -154,7 +159,7 @@ export default Ember.Component.extend({
     setup: Ember.on('init', function() {
         // do setup work ...
         _.forEach(this.get('parcelListInfo'), function(rawParcel, key) {
-            var singleGroupInfo = GroupOfParcel.create({
+            var singleGroupInfo = ParcelCollection.create({
                 id: key,
                 zip: rawParcel[0].zip,
                 count: rawParcel.length,
@@ -190,7 +195,7 @@ export default Ember.Component.extend({
 
         var that = this
         google.maps.event.addListener(this.get('map'), 'click', function(event) {
-            that.set('tapped', {
+            that.set('groupTapped', {
                 longitude: event.latLng.lng().toFixed(5),
                 latitude: event.latLng.lat().toFixed(5)
             })
@@ -198,10 +203,30 @@ export default Ember.Component.extend({
         })
 
         this.send('_colorMarkers', this.get('map'))
-            // function happens whenever init is called
-            // but you don't have to call super because
-            // you are not overriding init
-            // think of this function happening "along side" init
+
+        // setup zonePolygons
+        _.forEach(this.get('zoneListInfo'), function(zoneInfo) {
+            var paths = zoneInfo.vertexes.map(function(vertex) {
+                return {lat: parseFloat(vertex.latitude), lng: parseFloat(vertex.longitude)}
+            })
+            this.get('zonePolygons').pushObject(Zone.create({
+                polygon: new google.maps.Polygon({
+                    paths: paths,
+                    strokeColor: '#f0ede5',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: 'green',
+                    fillOpacity: 0.35,
+                    map: this.get('map')
+                }),
+                name: zoneInfo.name
+            }))
+        }, this)
+
+        // function happens whenever init is called
+        // but you don't have to call super because
+        // you are not overriding init
+        // think of this function happening "along side" init
 
         // because of this no need to call super
     }),
@@ -217,11 +242,6 @@ export default Ember.Component.extend({
             console.log(this.get('numberOfDeliveredGroup'))
         },
 
-        _updateCards: function(group) {
-            $("#cards").show()
-            this.set('cardParcel', group.get('parcels'))
-        },
-
         groupTapped: function(group, index) {
             this.get('map').setCenter({
                 lat: group.latitude,
@@ -230,6 +250,17 @@ export default Ember.Component.extend({
             this.send('_updateCards', group)
             this.send('_highlightMarker', group)
         },
+
+        zoneTapped: function(zone, index) {
+            console.log(this.get('zoneTapped').get)
+            if (this.get('zoneTapped').polygon != '') {
+                this.get('zoneTapped').polygon.setOptions({strokeWeight: 2.0, fillColor: 'green'})
+            }
+            this.send('_updateCardZone', zone, index)
+            console.log(zone)
+            
+        },
+
         cardConfirmed: function(parcel) {
             parcel.set('isDelivered', true)
             this.send('_highlightMarker', this._fromGroup(parcel.group_id))
@@ -250,7 +281,7 @@ export default Ember.Component.extend({
             if (this.get('drawingTool').drawingMode == null) {
                 $('#zone-maker').addClass('primary')
                 this.get('drawingTool').setDrawingMode('polygon')
-            }else{
+            } else {
                 $('#zone-maker').removeClass('primary')
                 this.get('drawingTool').setDrawingMode(null)
             }
@@ -295,21 +326,32 @@ export default Ember.Component.extend({
                 drawingControlOptions: {
                     // position: google.maps.ControlPosition.TOP_CENTER, // show control 
                     drawingModes: [google.maps.drawing.OverlayType.POLYGON]
-                    // drawingModes: []
+                        // drawingModes: []
                 }
             });
             //Loading the drawn shape in the Map.
             drawingTool.setMap(map);
             drawingTool.setDrawingMode(null)
 
-            var that  = this
+            var that = this
             google.maps.event.addListener(drawingTool, 'polygoncomplete', function(polygon) {
                 // drawPolygon(polygon);
-                console.log(polygon)
-
-                that.get('zonePolygons').pushObject({zone: polygon})
-                // console.log(drawingTool)
+                that.get('zonePolygons').pushObject(Zone.create({
+                        polygon: polygon,
+                        name: `zone--${that.get('zonePolygons').length}`
+                    }))
+                    // console.log(drawingTool)
             });
-        }
+        },
+
+        _updateCardZone: function(zone, index) {
+            zone.polygon.setOptions({strokeWeight: 2.0, fillColor: 'red'})
+            this.set('zoneTapped', zone)
+        },
+
+        _updateCards: function(group) {
+            $("#cards").show()
+            this.set('cardParcel', group.get('parcels'))
+        },
     }
 });
