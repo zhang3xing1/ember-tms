@@ -102,7 +102,12 @@ export default Ember.Component.extend({
 
     cardParcel: Ember.A(),
 
-    tapped: {longitude: 0, latitude: 0},
+    tapped: {
+        longitude: 0,
+        latitude: 0
+    },
+
+    zonePolygons: Ember.A(),
 
     _clickMarkerToShowCard: function(group_id) {
         return _.find(this.get('groupsOfParcel'), function(group) {
@@ -180,10 +185,15 @@ export default Ember.Component.extend({
             lng: this.get('groupsOfParcel')[1].longitude
         })
 
+        this.set('drawingTool', new google.maps.drawing.DrawingManager())
+        this.send('_initiatePolygon')
 
         var that = this
         google.maps.event.addListener(this.get('map'), 'click', function(event) {
-            that.set('tapped', {longitude: event.latLng.lng().toFixed(5), latitude: event.latLng.lat().toFixed(5)})
+            that.set('tapped', {
+                longitude: event.latLng.lng().toFixed(5),
+                latitude: event.latLng.lat().toFixed(5)
+            })
             console.log(`${event.latLng.lng()} ${event.latLng.lat()}`);
         })
 
@@ -223,16 +233,27 @@ export default Ember.Component.extend({
         cardConfirmed: function(parcel) {
             parcel.set('isDelivered', true)
             this.send('_highlightMarker', this._fromGroup(parcel.group_id))
-            // this.send('_colorMarker', this._fromGroup(parcel.group_id))
+                // this.send('_colorMarker', this._fromGroup(parcel.group_id))
         },
         cardUndo: function(parcel) {
             parcel.set('isDelivered', false)
             this.send('_highlightMarker', this._fromGroup(parcel.group_id))
-            // this.send('_colorMarker', this._fromGroup(parcel.group_id))
+                // this.send('_colorMarker', this._fromGroup(parcel.group_id))
         },
 
         home: function() {
             $("#cards").hide()
+        },
+
+        zoneMaker: function() {
+            console.log(this.get('drawingTool').drawingMode)
+            if (this.get('drawingTool').drawingMode == null) {
+                $('#zone-maker').addClass('primary')
+                this.get('drawingTool').setDrawingMode('polygon')
+            }else{
+                $('#zone-maker').removeClass('primary')
+                this.get('drawingTool').setDrawingMode(null)
+            }
         },
 
         _colorMarker: function(group) {
@@ -260,5 +281,35 @@ export default Ember.Component.extend({
             }, 1000, this);
 
         },
+
+        _initiatePolygon: function() {
+            //Allowing to draw shapes in the Client Side
+            var drawingTool = this.get('drawingTool')
+            var map = this.get('map')
+            if (drawingTool.getMap()) {
+                drawingTool.setMap(null); // Used to disable the Polygon tool
+            }
+            drawingTool.setOptions({
+                drawingMode: google.maps.drawing.OverlayType.POLYGON,
+                drawingControl: true,
+                drawingControlOptions: {
+                    // position: google.maps.ControlPosition.TOP_CENTER, // show control 
+                    drawingModes: [google.maps.drawing.OverlayType.POLYGON]
+                    // drawingModes: []
+                }
+            });
+            //Loading the drawn shape in the Map.
+            drawingTool.setMap(map);
+            drawingTool.setDrawingMode(null)
+
+            var that  = this
+            google.maps.event.addListener(drawingTool, 'polygoncomplete', function(polygon) {
+                // drawPolygon(polygon);
+                console.log(polygon)
+
+                that.get('zonePolygons').pushObject({zone: polygon})
+                // console.log(drawingTool)
+            });
+        }
     }
 });
