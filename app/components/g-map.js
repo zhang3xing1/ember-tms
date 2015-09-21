@@ -106,11 +106,10 @@ export default Ember.Component.extend({
 
         var that = this
         marker.addListener("click", function() {
-                // console.log("you clicked group title is " + group.title)
-                that.send('_updateCards', group)
-                that.send('_highlightMarker', group)
-            })
-            // console.log(marker)
+            that.send('_updateCards', group)
+            that.send('_highlightMarker', group)
+        })
+
         return marker
 
     }),
@@ -213,7 +212,6 @@ export default Ember.Component.extend({
                 longitude: event.latLng.lng().toFixed(5),
                 latitude: event.latLng.lat().toFixed(5)
             })
-            console.log(`${event.latLng.lng()} ${event.latLng.lat()}`);
         })
 
         this.send('_colorMarkers', this.get('map'))
@@ -248,11 +246,13 @@ export default Ember.Component.extend({
                     fillOpacity: 0.35,
                     map: this.get('map')
                 }),
-                name: zoneInfo.name
+                name: zoneInfo.name,
+                isOriginal: JSON.parse(zoneInfo.isOriginal)
             })
 
             google.maps.event.addListener(singleZone.get('polygon'), 'click', function(event) {
-                console.log(`${singleZone.get('name')} clicked`)
+
+                that.send('zoneTapped', singleZone, 0)
 
                 _.forEach(that.get('groupsOfParcel'), function(group) {
                     // body...
@@ -260,7 +260,6 @@ export default Ember.Component.extend({
                         longitude: group.longitude,
                         latitude: group.latitude
                     }, singleZone.get('path'))
-                    console.log(result)
                     if (result) {
                         that.send('_highlightMarker', group)
                     }
@@ -308,7 +307,6 @@ export default Ember.Component.extend({
         },
 
         zoneTapped: function(zone, index) {
-            console.log(this.get('zoneTapped').get)
             if (this.get('zoneTapped').polygon != '') {
                 this.get('zoneTapped').polygon.setOptions({
                     strokeWeight: 2.0,
@@ -316,7 +314,6 @@ export default Ember.Component.extend({
                 })
             }
             this.send('_updateCardZone', zone, index)
-            console.log(zone)
 
         },
 
@@ -340,14 +337,28 @@ export default Ember.Component.extend({
         },
 
         zoneMaker: function() {
-            console.log(this.get('drawingTool').drawingMode)
             if (this.get('drawingTool').drawingMode == null) {
-                $('#zone-maker').addClass('primary')
+                $('#zone-maker').addClass('teal')
                 this.get('drawingTool').setDrawingMode('polygon')
+
+                this.send('_hideAllMarkers')
             } else {
-                $('#zone-maker').removeClass('primary')
+                $('#zone-maker').removeClass('teal')
                 this.get('drawingTool').setDrawingMode(null)
+                this.send('_showAllMarkers')
             }
+        },
+
+        _hideAllMarkers: function() {
+            _.forEach(this.get('markers'), function(marker) {
+                return marker.setMap(null)
+            }, this)
+        },
+
+        _showAllMarkers: function() {
+            _.forEach(this.get('markers'), function(marker) {
+                return marker.setMap(this.get('map'))
+            }, this)
         },
 
         _colorMarker: function(group) {
@@ -356,7 +367,6 @@ export default Ember.Component.extend({
                 return marker.group_id == group.id
             }, this)
             if (group.get('isAllDelivered')) {
-                console.log(marker)
                 marker.setMap(null)
             } else {
                 marker.setMap(this.get('map'))
@@ -369,7 +379,7 @@ export default Ember.Component.extend({
             var marker = _.find(this.get('markers'), function(marker) {
                 return marker.group_id == group.id
             }, this)
-            marker.set('icon', pinSymbol_(group.get('countOfUndelivered'), 'green'))
+            marker.set('icon', pinSymbol_(group.get('countOfUndelivered'), 'yellow'))
             setTimeout(function(that) {
                 that.send('_colorMarker', that._fromGroup(group.id))
             }, 1000, this);
@@ -400,10 +410,9 @@ export default Ember.Component.extend({
             google.maps.event.addListener(drawingTool, 'polygoncomplete', function(polygon) {
                 // drawPolygon(polygon);
                 that.get('zonePolygons').pushObject(Zone.create({
-                        polygon: polygon,
-                        name: `zone--${that.get('zonePolygons').length}`
-                    }))
-                    // console.log(drawingTool)
+                    polygon: polygon,
+                    name: `zone--${that.get('zonePolygons').length}`
+                }))
             });
         },
 

@@ -42,7 +42,8 @@ export default Ember.Route.extend({
                         latitude: '37.43963330766384',
                         longitude: '127.12267398834229'
                     }, ],
-                    name: 'zip_13379'
+                    name: 'zip_13379',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{
                         latitude: '37.43961627039276',
@@ -78,7 +79,8 @@ export default Ember.Route.extend({
                         latitude: '37.438406614232655',
                         longitude: '127.12268471717834'
                     }, ],
-                    name: 'zip_13312'
+                    name: 'zip_13312',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{
                         latitude: '37.436396156516224',
@@ -108,7 +110,8 @@ export default Ember.Route.extend({
                         latitude: '37.4345730676586',
                         longitude: '127.12327480316162'
                     }, ],
-                    name: 'zip_13315'
+                    name: 'zip_13315',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{
                         latitude: '37.43275845381101',
@@ -180,76 +183,100 @@ export default Ember.Route.extend({
                         latitude: '37.43456454844757',
                         longitude: '127.12327480316162'
                     }, ],
-                    name: 'zip_13314'
+                    name: 'zip_13314',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.43949700938671',longitude: '127.1258819103241'}, {latitude: '37.43949700938671',longitude: '127.1267831325531'}, {latitude: '37.43963330766384',longitude: '127.12775945663452'}, {latitude: '37.43376373827896',longitude: '127.12884306907654'}, {latitude: '37.43379781548197',longitude: '127.12870359420776'}, {latitude: '37.434428240938836',longitude: '127.12780237197876'}, {latitude: '37.4346752981156',longitude: '127.12753415107727'}, {latitude: '37.43486272025742',longitude: '127.12748050689697'}, {latitude: '37.43557832775467',longitude: '127.127845287323'}, {latitude: '37.435654999580684',longitude: '127.12782382965088'}, {latitude: '37.43626837136132',longitude: '127.12724447250366'}, {latitude: '37.437886967202125',longitude: '127.12603211402893'},],
-                    name: 'zip_13313'
+                    name: 'zip_13313',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.43963330766384',longitude: '127.12775945663452'}, {latitude: '37.44041701793974',longitude: '127.13018417358398'}, {latitude: '37.44089405495865',longitude: '127.13175058364868'}, {latitude: '37.44009331251637',longitude: '127.13212609291077'}, {latitude: '37.43966738219432',longitude: '127.13051676750183'}, {latitude: '37.43898588863649',longitude: '127.12826371192932'}, {latitude: '37.438909220222854',longitude: '127.1278989315033'},],
-                    name: 'zip_13316'
+                    name: 'zip_13316',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.43890070150537',longitude: '127.12788820266724'}, {latitude: '37.43917329998358',longitude: '127.1289074420929'}, {latitude: '37.43786992953348',longitude: '127.12916493415833'}, {latitude: '37.43652820094709',longitude: '127.12944388389587'}, {latitude: '37.43519922701612',longitude: '127.12967991828918'}, {latitude: '37.435054401507955',longitude: '127.12859094142914'}, {latitude: '37.437001003288934',longitude: '127.1282422542572'}, {latitude: '37.4377890005544',longitude: '127.12810277938843'},],
-                    name: 'zip_13320'
+                    name: 'zip_13320',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.439186078012874',longitude: '127.12890207767487'}, {latitude: '37.43945015679659',longitude: '127.12980329990387'}, {latitude: '37.438819773640994',longitude: '127.13009834289551'}, {latitude: '37.43821494156764',longitude: '127.13037192821503'}, {latitude: '37.43792104252779',longitude: '127.1293956041336'}, {latitude: '37.43786992953348',longitude: '127.1291595697403'},],
-                    name: 'zip_13319'
+                    name: 'zip_13319',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.43945015679659',longitude: '127.12980329990387'}, {latitude: '37.43987182905146',longitude: '127.13123023509979'}, {latitude: '37.439224412087675',longitude: '127.1315199136734'}, {latitude: '37.438632361408565',longitude: '127.13180422782898'}, {latitude: '37.43841513300637',longitude: '127.13109612464905'}, {latitude: '37.43821494156764',longitude: '127.13038265705109'},],
-                    name: 'zip_13318'
+                    name: 'zip_13318',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.43988034765839',longitude: '127.13121950626373'}, {latitude: '37.44012312754812',longitude: '127.13212072849274'}, {latitude: '37.43888792342735',longitude: '127.13270008563995'}, {latitude: '37.438632361408565',longitude: '127.13180959224701'},],
-                    name: 'zip_13317'
+                    name: 'zip_13317',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.43787418895101',longitude: '127.1291595697403'}, {latitude: '37.43791252369782',longitude: '127.12940096855164'}, {latitude: '37.43821920096553',longitude: '127.13037729263306'}, {latitude: '37.43815530997174',longitude: '127.13039338588715'}, {latitude: '37.43761010460592',longitude: '127.13064551353455'}, {latitude: '37.436966927544375',longitude: '127.13095664978027'}, {latitude: '37.43675821327025',longitude: '127.13020026683807'}, {latitude: '37.43664320719705',longitude: '127.12978720664978'}, {latitude: '37.4365452389212',longitude: '127.12943851947784'},],
-                    name: 'zip_13321'
+                    name: 'zip_13321',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.4382106821695',longitude: '127.13037729263306'}, {latitude: '37.43816382877405',longitude: '127.13039338588715'}, {latitude: '37.43697118701328',longitude: '127.1309620141983'}, {latitude: '37.437196938519165',longitude: '127.1316808462143'}, {latitude: '37.43740565156976',longitude: '127.1323674917221'}, {latitude: '37.43753343478282',longitude: '127.13279128074646'}, {latitude: '37.43816808817484',longitude: '127.13248014450073'}, {latitude: '37.43874736442502',longitude: '127.13221192359924'}, {latitude: '37.438517358215364',longitude: '127.1314287185669'}, {latitude: '37.438406614232655',longitude: '127.13106662034988'},],
-                    name: 'zip_13322'
+                    name: 'zip_13322',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.438751623792605',longitude: '127.13221728801727'}, {latitude: '37.43753343478282',longitude: '127.13278591632843'}, {latitude: '37.43629818791697',longitude: '127.13336527347565'}, {latitude: '37.43643875151937',longitude: '127.13383734226227'}, {latitude: '37.437669736636266',longitude: '127.13326334953308'}, {latitude: '37.438883664067525',longitude: '127.13270008563995'},],
-                    name: 'zip_13323'
+                    name: 'zip_13323',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.436553757906786',longitude: '127.12943315505981'}, {latitude: '37.436966927544375',longitude: '127.13096737861633'}, {latitude: '37.43636208049625',longitude: '127.13124096393585'}, {latitude: '37.43573593086741',longitude: '127.13153064250946'}, {latitude: '37.435514434506324',longitude: '127.13075816631317'}, {latitude: '37.435395166963445',longitude: '127.13034510612488'}, {latitude: '37.43519922701612',longitude: '127.12967991828918'},],
-                    name: 'zip_13325'
+                    name: 'zip_13325',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.43697118701328',longitude: '127.13096737861633'}, {latitude: '37.4375291753459',longitude: '127.1327805519104'}, {latitude: '37.43629818791697',longitude: '127.13336527347565'}, {latitude: '37.43635782099267',longitude: '127.13356375694275'}, {latitude: '37.436293928409775',longitude: '127.13357985019684'}, {latitude: '37.43573593086741',longitude: '127.13382661342621'}, {latitude: '37.435510174954494',longitude: '127.13305950164795'}, {latitude: '37.43553573226182',longitude: '127.13298976421356'}, {latitude: '37.4360979908154',longitude: '127.13271081447601'}, {latitude: '37.43573593086741',longitude: '127.13152527809143'},],
-                    name: 'zip_13324'
+                    name: 'zip_13324',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.43643449202016',longitude: '127.1338427066803'}, {latitude: '37.43635782099267',longitude: '127.13356375694275'}, {latitude: '37.4363067069307',longitude: '127.13356912136078'}, {latitude: '37.43573167132818',longitude: '127.13382661342621'}, {latitude: '37.435510174954494',longitude: '127.13306486606598'}, {latitude: '37.43553573226182',longitude: '127.13297367095947'}, {latitude: '37.4360979908154',longitude: '127.13270545005798'}, {latitude: '37.43573167132818',longitude: '127.1315199136734'}, {latitude: '37.435514434506324',longitude: '127.1307635307312'}, {latitude: '37.43519496744633',longitude: '127.12967455387115'}, {latitude: '37.435054401507955',longitude: '127.12861239910126'}, {latitude: '37.4334485234158',longitude: '127.12890207767487'}, {latitude: '37.43356353439805',longitude: '127.12904155254364'}, {latitude: '37.43426211582694',longitude: '127.13277518749237'}, {latitude: '37.43468807691291',longitude: '127.13463127613068'},],
-                    name: 'zip_13326'
+                    name: 'zip_13326',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.44090683269413',longitude: '127.13173985481262'}, {latitude: '37.44013590541523',longitude: '127.1321153640747'}, {latitude: '37.44066831460552',longitude: '127.1338963508606'}, {latitude: '37.441132572327696',longitude: '127.13551640510559'}, {latitude: '37.44058738865273',longitude: '127.13576853275299'}, {latitude: '37.44087275872801',longitude: '127.13670194149017'}, {latitude: '37.441413681108024',longitude: '127.13646054267883'}, {latitude: '37.442163299359315',longitude: '127.13610649108887'}, {latitude: '37.441882193395124',longitude: '127.1351569890976'}, {latitude: '37.4413966442423',longitude: '127.1335369348526'},],
-                    name: 'zip_13327'
+                    name: 'zip_13327',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.440672573863786',longitude: '127.13388562202454'}, {latitude: '37.439416082167206',longitude: '127.13447570800781'}, {latitude: '37.439663122878876',longitude: '127.13527500629425'}, {latitude: '37.43990590347334',longitude: '127.13609576225281'}, {latitude: '37.440178498289875',longitude: '127.13703453540802'}, {latitude: '37.44087275872801',longitude: '127.1367073059082'}, {latitude: '37.44058738865273',longitude: '127.13576316833496'}, {latitude: '37.44114109079109',longitude: '127.13551104068756'}, {latitude: '37.44089831420405',longitude: '127.13470101356506'},],
-                    name: 'zip_13328'
+                    name: 'zip_13328',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.43888792342735',longitude: '127.13269740343094'}, {latitude: '37.43765908806291',longitude: '127.1332660317421'}, {latitude: '37.437929561356775',longitude: '127.13415652513504'}, {latitude: '37.438185125775604',longitude: '127.135049700737'}, {latitude: '37.438634491095634',longitude: '127.13484317064285'}, {latitude: '37.43910089110966',longitude: '127.13462322950363'}, {latitude: '37.43941821183199',longitude: '127.13447570800781'}, {latitude: '37.43914987359085',longitude: '127.1335905790329'},],
-                    name: 'zip_13330'
+                    name: 'zip_13330',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.43942460082599',longitude: '127.13447570800781'}, {latitude: '37.43816382877405',longitude: '127.13506042957306'}, {latitude: '37.438423651779125',longitude: '127.13583827018738'}, {latitude: '37.438666436394826',longitude: '127.13666439056396'}, {latitude: '37.43886662662579',longitude: '127.13734030723572'}, {latitude: '37.439045519570556',longitude: '127.13800549507141'}, {latitude: '37.439177559326914',longitude: '127.13771045207977'}, {latitude: '37.43931385818588',longitude: '127.13750123977661'}, {latitude: '37.439518306008864',longitude: '127.13732421398163'}, {latitude: '37.439829236002296',longitude: '127.13718473911285'}, {latitude: '37.440178498289875',longitude: '127.13702917098999'}, {latitude: '37.43989312556695',longitude: '127.13607430458069'}, {latitude: '37.43965460424722',longitude: '127.13526427745819'},],
-                    name: 'zip_13331'
+                    name: 'zip_13331',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.43818086637578',longitude: '127.135049700737'}, {latitude: '37.436949889666266',longitude: '127.13562905788422'}, {latitude: '37.4371884196068',longitude: '127.13642835617065'}, {latitude: '37.437435467672316',longitude: '127.13723838329315'}, {latitude: '37.437848632442204',longitude: '127.13799476623535'}, {latitude: '37.4386153239096',longitude: '127.13936805725098'}, {latitude: '37.4387218082144',longitude: '127.13905692100525'}, {latitude: '37.439045519570556',longitude: '127.13799476623535'}, {latitude: '37.438853848541946',longitude: '127.13728129863739'}, {latitude: '37.43866217702239',longitude: '127.13665902614594'}, {latitude: '37.438423651779125',longitude: '127.13582754135132'},],
-                    name: 'zip_13332'
+                    name: 'zip_13332',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.43642171352104',longitude: '127.1338427066803'}, {latitude: '37.43669858051363',longitude: '127.1347439289093'}, {latitude: '37.436949889666266',longitude: '127.13562369346619'}, {latitude: '37.43629818791697',longitude: '127.13590800762177'}, {latitude: '37.43552721316033',longitude: '127.13627815246582'}, {latitude: '37.43510551642518',longitude: '127.1365088224411'}, {latitude: '37.43483716272026',longitude: '127.13559687137604'}, {latitude: '37.43468381731404',longitude: '127.13462591171265'},],
-                    name: 'zip_13334'
+                    name: 'zip_13334',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.436954149136135',longitude: '127.13562369346619'}, {latitude: '37.4374312082298',longitude: '127.13724911212921'}, {latitude: '37.436792289109874',longitude: '127.13753342628479'}, {latitude: '37.43640893501973',longitude: '127.1377158164978'}, {latitude: '37.43619595967671',longitude: '127.13784992694855'}, {latitude: '37.435893533648276',longitude: '127.13808596134186'}, {latitude: '37.43539942652181',longitude: '127.13729739189148'}, {latitude: '37.43510551642518',longitude: '127.13649809360504'}, {latitude: '37.43553573226182',longitude: '127.13627278804779'}, {latitude: '37.43631096643721',longitude: '127.13590264320374'},],
-                    name: 'zip_13335'
+                    name: 'zip_13335',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.437443986556566',longitude: '127.13724911212921'}, {latitude: '37.437989193132566',longitude: '127.13827908039093'}, {latitude: '37.4386153239096',longitude: '127.13938415050507'}, {latitude: '37.438551433254',longitude: '127.13957190513611'}, {latitude: '37.4383725391281',longitude: '127.13991522789001'}, {latitude: '37.4381723475754',longitude: '127.14015126228333'}, {latitude: '37.437435467672316',longitude: '127.13875651359558'}, {latitude: '37.436800808067346',longitude: '127.13753879070282'},],
-                    name: 'zip_13336'
+                    name: 'zip_13336',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.43680506754574',longitude: '127.13752806186676'}, {latitude: '37.4374312082298',longitude: '127.13875114917755'}, {latitude: '37.43817660697571',longitude: '127.14015126228333'}, {latitude: '37.4379934525433',longitude: '127.14043021202087'}, {latitude: '37.43756751026945',longitude: '127.14097738265991'}, {latitude: '37.43699674382171',longitude: '127.13996350765228'}, {latitude: '37.436711358965475',longitude: '127.13943243026733'}, {latitude: '37.43616188356557',longitude: '127.13846683502197'}, {latitude: '37.435889274118026',longitude: '127.13809132575989'}, {latitude: '37.4362002191895',longitude: '127.13784456253052'}, {latitude: '37.43641745402084',longitude: '127.13769972324371'},],
-                    name: 'zip_13337'
+                    name: 'zip_13337',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.440140164703784',longitude: '127.13213682174683'}, {latitude: '37.43888792342735',longitude: '127.13271081447601'}, {latitude: '37.43904126021971',longitude: '127.13320434093475'}, {latitude: '37.43910089110966',longitude: '127.13339745998383'}, {latitude: '37.439156262607774',longitude: '127.13359594345093'}, {latitude: '37.43943311948383',longitude: '127.13446497917175'}, {latitude: '37.440672573863786',longitude: '127.13389098644257'},],
-                    name: 'zip_13329'
+                    name: 'zip_13329',
+                    isOriginal: 'true'
                 }, {
                     vertexes: [{latitude: '37.437661217777716',longitude: '127.1332660317421'}, {latitude: '37.436428102770854',longitude: '127.13384002447128'}, {latitude: '37.436700710255764',longitude: '127.1347439289093'}, {latitude: '37.43694775993123',longitude: '127.1356263756752'}, {latitude: '37.438185125775604',longitude: '127.13504701852798'}, {latitude: '37.43792743164962',longitude: '127.134148478508'},],
-                    name: 'zip_13330'
+                    name: 'zip_13330',
+                    isOriginal: 'true'
                 }
 
 

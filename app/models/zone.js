@@ -2,6 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Object.extend({
     name: '',
+    isOriginal: false,
     // polygon:  google.maps.Polygon class
     path: Ember.computed('polygon', function() {
         return this.get('polygon').getPath().getArray().map(function(vertex) {
