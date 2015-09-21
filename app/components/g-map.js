@@ -231,13 +231,6 @@ export default Ember.Component.extend({
         })
 
         _.forEach(zoneListInfo, function(zoneInfo) {
-            zoneInfo.vertexes = zoneInfo.vertexes.map(function(vertex) {
-                return {
-                    latitude: parseFloat(vertex.latitude),
-                    longitude: parseFloat(vertex.longitude)
-                }
-            })
-
             var paths = zoneInfo.vertexes.map(function(vertex) {
                 return {
                     lat: parseFloat(vertex.latitude),
@@ -336,6 +329,10 @@ export default Ember.Component.extend({
             parcel.set('isDelivered', false)
             this.send('_highlightMarker', this._fromGroup(parcel.group_id))
                 // this.send('_colorMarker', this._fromGroup(parcel.group_id))
+        },
+
+        hideCard: function(index) {
+            $(`#card-${index}`).hide()
         },
 
         home: function() {
