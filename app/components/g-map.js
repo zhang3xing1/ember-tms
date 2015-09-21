@@ -6,13 +6,6 @@ import Zone from '../models/zone';
 import _ from 'lodash/lodash';
 
 ParcelCollection.reopen({
-    // isAllDelivered: function() {
-    //     return this.get('parcels').reduce(function(result, parcel) {
-    //         console.log(parcel.get('isDelivered'))
-    //         return result && parcel.get('isDelivered');
-    //     }, true);
-    // }.property('parcels.@each.isDelivered'),
-
     isAllDelivered: Ember.computed('parcels.@each.isDelivered', function() {
         return this.get('parcels').reduce(function(result, parcel) {
             return result && parcel.get('isDelivered')
@@ -46,11 +39,32 @@ export default Ember.Component.extend({
     //     // therefore you need to call super to make sure other init methods
     //     // further up in the hierarchy get called
 
-
-
     //     // call super to initialize other init methods 
     //     this._super();
     // },
+
+    checkIn: function(point, pointArray) {
+        var i
+        var j = pointArray.length - 1
+            // var vertexJ = pointArray[j]
+        var oddNodes = false
+
+        for (var i = 0; i < pointArray.length; i++) {
+            pointArray[i]
+
+            var vertexI = pointArray[i]
+            var vertexJ = pointArray[j]
+
+            if (vertexI.longitude < point.longitude && vertexJ.longitude >= point.longitude || vertexJ.longitude < point.longitude && vertexI.longitude >= point.longitude) {
+                if (vertexI.latitude + (point.longitude - vertexI.longitude) / (vertexJ.longitude - vertexI.longitude) * (vertexJ.latitude - vertexI.latitude) < point.latitude) {
+                    oddNodes = !oddNodes;
+                }
+            }
+            j = i;
+
+        };
+        return oddNodes;
+    },
 
     groupsOfParcel: Ember.A(), // Array of ParcelCollection
 
@@ -217,13 +231,21 @@ export default Ember.Component.extend({
         })
 
         _.forEach(zoneListInfo, function(zoneInfo) {
+            zoneInfo.vertexes = zoneInfo.vertexes.map(function(vertex) {
+                return {
+                    latitude: parseFloat(vertex.latitude),
+                    longitude: parseFloat(vertex.longitude)
+                }
+            })
+
             var paths = zoneInfo.vertexes.map(function(vertex) {
                 return {
                     lat: parseFloat(vertex.latitude),
                     lng: parseFloat(vertex.longitude)
                 }
             })
-            this.get('zonePolygons').pushObject(Zone.create({
+
+            var singleZone = Zone.create({
                 polygon: new google.maps.Polygon({
                     paths: paths,
                     strokeColor: '#f0ede5',
@@ -234,7 +256,34 @@ export default Ember.Component.extend({
                     map: this.get('map')
                 }),
                 name: zoneInfo.name
-            }))
+            })
+
+            google.maps.event.addListener(singleZone.get('polygon'), 'click', function(event) {
+                console.log(`${singleZone.get('name')} clicked`)
+
+                _.forEach(that.get('groupsOfParcel'), function(group) {
+                    // body...
+                    var result = that.checkIn({
+                        longitude: group.longitude,
+                        latitude: group.latitude
+                    }, singleZone.get('path'))
+                    console.log(result)
+                    if (result) {
+                        that.send('_highlightMarker', group)
+                    }
+                }, that)
+
+            });
+
+            // google.maps.event.addListener(singleZone.get('polygon'), 'mousemove', function(event) {
+            //     var result = that.checkIn({
+            //         longitude: event.latLng.lng(),
+            //         latitude: event.latLng.lat()
+            //     }, singleZone.vertexes)
+            //     console.log(result)
+            // });
+
+            this.get('zonePolygons').pushObject(singleZone)
         }, this)
 
         // function happens whenever init is called
