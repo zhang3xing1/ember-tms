@@ -205,9 +205,23 @@ export default Ember.Component.extend({
         this.send('_colorMarkers', this.get('map'))
 
         // setup zonePolygons
-        _.forEach(this.get('zoneListInfo'), function(zoneInfo) {
+        var zoneListInfo = this.get('zoneListInfo').sort(function(a, b) {
+            if (a.name > b.name) {
+                return 1;
+            }
+            if (a.name < b.name) {
+                return -1;
+            }
+            // a must be equal to b
+            return 0;
+        })
+
+        _.forEach(zoneListInfo, function(zoneInfo) {
             var paths = zoneInfo.vertexes.map(function(vertex) {
-                return {lat: parseFloat(vertex.latitude), lng: parseFloat(vertex.longitude)}
+                return {
+                    lat: parseFloat(vertex.latitude),
+                    lng: parseFloat(vertex.longitude)
+                }
             })
             this.get('zonePolygons').pushObject(Zone.create({
                 polygon: new google.maps.Polygon({
@@ -254,11 +268,14 @@ export default Ember.Component.extend({
         zoneTapped: function(zone, index) {
             console.log(this.get('zoneTapped').get)
             if (this.get('zoneTapped').polygon != '') {
-                this.get('zoneTapped').polygon.setOptions({strokeWeight: 2.0, fillColor: 'green'})
+                this.get('zoneTapped').polygon.setOptions({
+                    strokeWeight: 2.0,
+                    fillColor: 'green'
+                })
             }
             this.send('_updateCardZone', zone, index)
             console.log(zone)
-            
+
         },
 
         cardConfirmed: function(parcel) {
@@ -345,7 +362,10 @@ export default Ember.Component.extend({
         },
 
         _updateCardZone: function(zone, index) {
-            zone.polygon.setOptions({strokeWeight: 2.0, fillColor: 'red'})
+            zone.polygon.setOptions({
+                strokeWeight: 2.0,
+                fillColor: 'red'
+            })
             this.set('zoneTapped', zone)
         },
 
