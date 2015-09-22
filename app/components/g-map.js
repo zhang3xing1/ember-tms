@@ -127,20 +127,6 @@ export default Ember.Component.extend({
 
     zonePolygons: Ember.A(),
 
-    _clickMarkerToShowCard: function(group_id) {
-        return _.find(this.get('groupsOfParcel'), function(group) {
-            return group.id = group_id
-        })
-    },
-
-    _objToStrMap: function(obj) {
-        let strMap = new Map();
-        for (let k of Object.keys(obj)) {
-            strMap.set(k, obj[k]);
-        }
-        return strMap;
-    },
-
     pinSymbol: function() {
         return {
             path: "M27.648 -41.399q0 -3.816 -2.7 -6.516t-6.516 -2.7 -6.516 2.7 -2.7 6.516 2.7 6.516 6.516 2.7 6.516 -2.7 2.7 -6.516zm9.216 0q0 3.924 -1.188 6.444l-13.104 27.864q-0.576 1.188 -1.71 1.872t-2.43 0.684 -2.43 -0.684 -1.674 -1.872l-13.14 -27.864q-1.188 -2.52 -1.188 -6.444 0 -7.632 5.4 -13.032t13.032 -5.4 13.032 5.4 5.4 13.032z",
@@ -244,28 +230,15 @@ export default Ember.Component.extend({
                     strokeWeight: 2,
                     fillColor: 'green',
                     fillOpacity: 0.35,
-                    map: this.get('map')
+                    map: this.get('map'),
+                    zIndex: 1
                 }),
                 name: zoneInfo.name,
                 isOriginal: JSON.parse(zoneInfo.isOriginal)
             })
 
-            google.maps.event.addListener(singleZone.get('polygon'), 'click', function(event) {
 
-                that.send('zoneTapped', singleZone, 0)
-
-                _.forEach(that.get('groupsOfParcel'), function(group) {
-                    // body...
-                    var result = that.checkIn({
-                        longitude: group.longitude,
-                        latitude: group.latitude
-                    }, singleZone.get('path'))
-                    if (result) {
-                        that.send('_highlightMarker', group)
-                    }
-                }, that)
-
-            });
+            this.send('_zoneClickedCheck', singleZone, that)
 
             // google.maps.event.addListener(singleZone.get('polygon'), 'mousemove', function(event) {
             //     var result = that.checkIn({
@@ -314,7 +287,6 @@ export default Ember.Component.extend({
                 })
             }
             this.send('_updateCardZone', zone, index)
-
         },
 
         cardConfirmed: function(parcel) {
@@ -406,14 +378,7 @@ export default Ember.Component.extend({
             drawingTool.setMap(map);
             drawingTool.setDrawingMode(null)
 
-            var that = this
-            google.maps.event.addListener(drawingTool, 'polygoncomplete', function(polygon) {
-                // drawPolygon(polygon);
-                that.get('zonePolygons').pushObject(Zone.create({
-                    polygon: polygon,
-                    name: `zone--${that.get('zonePolygons').length}`
-                }))
-            });
+            this.send('_drawtoolCompleted', drawingTool, this)
         },
 
         _updateCardZone: function(zone, index) {
@@ -428,5 +393,44 @@ export default Ember.Component.extend({
             $("#cards").show()
             this.set('cardParcel', group.get('parcels'))
         },
+
+        // functions on google map event 
+        _drawtoolCompleted: function(drawingTool, that) {
+            google.maps.event.addListener(drawingTool, 'polygoncomplete', function(polygon) {
+                // drawPolygon(polygon);
+                console.log('polygon is generated~')
+                polygon.zIndex = 2
+                polygon.strokeColor= '#d64068'
+
+                var singleZone = Zone.create({
+                    polygon: polygon,
+                    name: `zone--${that.get('zonePolygons').length}`
+                })
+
+                that.send('_zoneClickedCheck', singleZone, that)
+
+                that.get('zonePolygons').pushObject(singleZone)
+            });
+        },
+
+        _zoneClickedCheck: function(zone, that) {
+            // that is global this
+            google.maps.event.addListener(zone.get('polygon'), 'click', function(event) {
+                console.log(zone.get('polygon').zInd)
+                that.send('zoneTapped', zone, 0)
+
+                _.forEach(that.get('groupsOfParcel'), function(group) {
+                    // body...
+                    var result = that.checkIn({
+                        longitude: group.longitude,
+                        latitude: group.latitude
+                    }, zone.get('path'))
+                    if (result) {
+                        that.send('_highlightMarker', group)
+                    }
+                }, that)
+            })
+        },
+
     }
 });

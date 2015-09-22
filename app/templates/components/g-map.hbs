@@ -14,14 +14,6 @@
           {{/each}}
       </div>
     </div>
-    <a class="item">
-      Longitude
-      <div class="ui label">{{groupTapped.longitude}}</div>
-    </a>
-    <a class="item">
-      Latitude
-      <div class="ui label">{{groupTapped.latitude}}</div>
-    </a>
     <div class="ui small dropdown item scrolling">
       Zips <i class="dropdown icon "></i>
       <div class="menu">
@@ -57,11 +49,14 @@
     <div class="content">
       <div class="header">{{zoneTapped.name}}</div>
       <div class="meta">
+        <div class="ui circular labels">
+        {{#each zoneTapped.path as |vertex  index|}}
+          <a class="ui teal label">{{index}}</a>
+        {{/each}}
+        </div>
       </div>
       <div class="description">
-        {{#each zoneTapped.path as |vertex  index|}}
-        <div class="item"><a class="ui teal circular label">{{index}}</a></div>
-        {{/each}}
+
         {{!-- debug block info --}}
 
         {{!-- {{#each zoneTapped.path as |vertex  index|}} --}}
