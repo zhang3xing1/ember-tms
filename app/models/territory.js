@@ -3,7 +3,13 @@ import Ember from 'ember';
 export default Ember.Object.extend({
     name: '',
     isOriginal: false,
-    isValid: true,
+    isVisible: true,
+    isAvailableZip: Ember.computed('isOriginal', 'isVisible', function() {
+        return (this.get('isOriginal') && this.get('isVisible'))
+    }),
+    isAvailableZone: Ember.computed('isOriginal', 'isVisible', function() {
+        return (!this.get('isOriginal') && this.get('isVisible'))
+    }),
     // polygon:  google.maps.Polygon class
     path: Ember.computed('polygon', function() {
         return this.get('polygon').getPath().getArray().map(function(vertex) {
