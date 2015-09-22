@@ -2,28 +2,15 @@
 import Ember from 'ember';
 import ParcelCollection from '../models/parcel_collection';
 import Parcel from '../models/parcel';
-import Zone from '../models/zone';
+import TerritoryCollection from '../models/territory_collection';
+import Territory from '../models/territory';
 import _ from 'lodash/lodash';
-
-ParcelCollection.reopen({
-    isAllDelivered: Ember.computed('parcels.@each.isDelivered', function() {
-        return this.get('parcels').reduce(function(result, parcel) {
-            return result && parcel.get('isDelivered')
-        }, true)
-    }),
-    countOfUndelivered: Ember.computed('parcels.@each.isDelivered', function() {
-        return this.get('parcels').reduce(function(result, parcel) {
-            return result + (parcel.get('isDelivered') ? 0 : 1)
-        }, 0)
-    })
-});
 
 export default Ember.Component.extend({
     tagName: 'g-map',
 
     didInsertElement: function() {
-        // this.$().foundation(); //or Ember.$(document).foundation();
-        $('.ui.dropdown').dropdown()
+        $('.ui.dropdown').dropdown()  // sematic-UI dropmenu needs it.
     },
 
     hiMap: 'tms-map',
@@ -46,22 +33,16 @@ export default Ember.Component.extend({
     checkIn: function(point, pointArray) {
         var i
         var j = pointArray.length - 1
-            // var vertexJ = pointArray[j]
         var oddNodes = false
-
         for (var i = 0; i < pointArray.length; i++) {
-            pointArray[i]
-
             var vertexI = pointArray[i]
             var vertexJ = pointArray[j]
-
             if (vertexI.longitude < point.longitude && vertexJ.longitude >= point.longitude || vertexJ.longitude < point.longitude && vertexI.longitude >= point.longitude) {
                 if (vertexI.latitude + (point.longitude - vertexI.longitude) / (vertexJ.longitude - vertexI.longitude) * (vertexJ.latitude - vertexI.latitude) < point.latitude) {
                     oddNodes = !oddNodes;
                 }
             }
             j = i;
-
         };
         return oddNodes;
     },
@@ -109,9 +90,7 @@ export default Ember.Component.extend({
             that.send('_updateCards', group)
             that.send('_highlightMarker', group)
         })
-
         return marker
-
     }),
 
     cardParcel: Ember.A(),
@@ -125,7 +104,8 @@ export default Ember.Component.extend({
         polygon: ''
     },
 
-    zonePolygons: Ember.A(),
+    territoryColletion: TerritoryCollection.create(),
+
 
     pinSymbol: function() {
         return {
@@ -202,7 +182,7 @@ export default Ember.Component.extend({
 
         this.send('_colorMarkers', this.get('map'))
 
-        // setup zonePolygons
+        // setup territoryColletion
         var zoneListInfo = this.get('zoneListInfo').sort(function(a, b) {
             if (a.name > b.name) {
                 return 1;
@@ -222,7 +202,7 @@ export default Ember.Component.extend({
                 }
             })
 
-            var singleZone = Zone.create({
+            var singleZone = Territory.create({
                 polygon: new google.maps.Polygon({
                     paths: paths,
                     strokeColor: '#f0ede5',
@@ -240,15 +220,15 @@ export default Ember.Component.extend({
 
             this.send('_zoneClickedCheck', singleZone, that)
 
-            // google.maps.event.addListener(singleZone.get('polygon'), 'mousemove', function(event) {
+            // google.maps.event.addListener(singleTerritory.get('polygon'), 'mousemove', function(event) {
             //     var result = that.checkIn({
             //         longitude: event.latLng.lng(),
             //         latitude: event.latLng.lat()
-            //     }, singleZone.vertexes)
+            //     }, singleTerritory.vertexes)
             //     console.log(result)
             // });
 
-            this.get('zonePolygons').pushObject(singleZone)
+            this.get('territoryColletion').get('territories').pushObject(singleZone)
         }, this)
 
         // function happens whenever init is called
@@ -310,12 +290,16 @@ export default Ember.Component.extend({
 
         zoneMaker: function() {
             if (this.get('drawingTool').drawingMode == null) {
-                $('#zone-maker').addClass('teal')
+                $('#zone-maker').removeClass('teal')
+                $('#zone-maker').addClass('red')
+                $('#zone-maker').text('2. Stop')
                 this.get('drawingTool').setDrawingMode('polygon')
 
                 this.send('_hideAllMarkers')
             } else {
-                $('#zone-maker').removeClass('teal')
+                $('#zone-maker').removeClass('red')
+                $('#zone-maker').addClass('teal')
+                $('#zone-maker').text('1. Create')
                 this.get('drawingTool').setDrawingMode(null)
                 this.send('_showAllMarkers')
             }
@@ -402,23 +386,21 @@ export default Ember.Component.extend({
                 polygon.zIndex = 2
                 polygon.strokeColor= '#d64068'
 
-                var singleZone = Zone.create({
+                var singleZone = Territory.create({
                     polygon: polygon,
-                    name: `zone--${that.get('zonePolygons').length}`
+                    name: `zone--${that.get('territoryColletion').get('territories').length}`
                 })
 
                 that.send('_zoneClickedCheck', singleZone, that)
 
-                that.get('zonePolygons').pushObject(singleZone)
+                that.get('territoryColletion').get('territories').pushObject(singleZone)
             });
         },
 
         _zoneClickedCheck: function(zone, that) {
             // that is global this
             google.maps.event.addListener(zone.get('polygon'), 'click', function(event) {
-                console.log(zone.get('polygon').zInd)
                 that.send('zoneTapped', zone, 0)
-
                 _.forEach(that.get('groupsOfParcel'), function(group) {
                     // body...
                     var result = that.checkIn({

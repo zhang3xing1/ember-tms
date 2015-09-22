@@ -18,24 +18,20 @@
       Zips <i class="dropdown icon "></i>
       <div class="menu">
         {{!-- <div class="item">Choice 1</div> --}}
-         {{#each zoneCollection as |zone index|}}
-         {{#if zone.isOriginal}}
-         <div class="item" {{action 'zoneTapped' zone index}} >
-           {{zone.name}}
+         {{#each territoryColletion.zipCollection as |territory index|}}
+         <div class="item" {{action 'zoneTapped' territory index}} >
+           {{territory.name}}
          </div>      
-         {{/if}}
           {{/each}}
       </div>
     </div>
     <div class="ui small dropdown item scrolling">
       Zones <i class="dropdown icon "></i>
       <div class="menu">
-        {{#each zoneCollection as |zone index|}}
-           {{#unless zone.isOriginal}}
-           <div class="item" {{action 'zoneTapped' zone index}} >
-             {{zone.name}}
+        {{#each territoryColletion.zoneCollection  as |territory index|}}
+           <div class="item" {{action 'zoneTapped' territory index}} >
+             {{territory.name}}
            </div>      
-           {{/unless}}
         {{/each}}
       </div>
     </div>
