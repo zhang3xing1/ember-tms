@@ -10,7 +10,10 @@ export default Ember.Component.extend({
     tagName: 'g-map',
 
     didInsertElement: function() {
-        $('.ui.dropdown').dropdown()  // sematic-UI dropmenu needs it.
+        $('.ui.dropdown').dropdown() // sematic-UI dropmenu needs it.
+
+        $('select.dropdown')
+            .dropdown();
     },
 
     hiMap: 'tms-map',
@@ -105,7 +108,6 @@ export default Ember.Component.extend({
     },
 
     territoryColletion: TerritoryCollection.create(),
-
 
     pinSymbol: function() {
         return {
@@ -370,6 +372,8 @@ export default Ember.Component.extend({
                 strokeWeight: 2.0,
                 fillColor: 'red'
             })
+            var firstVertex = zone.get('path')[0]
+            this.send('_updateMapCenter', firstVertex)
             this.set('zoneTapped', zone)
         },
 
@@ -383,13 +387,16 @@ export default Ember.Component.extend({
             google.maps.event.addListener(drawingTool, 'polygoncomplete', function(polygon) {
                 // drawPolygon(polygon);
                 console.log('polygon is generated~')
+
                 polygon.zIndex = 2
-                polygon.strokeColor= '#d64068'
+                polygon.strokeColor = '#d64068'
 
                 var singleZone = Territory.create({
                     polygon: polygon,
                     name: `zone--${that.get('territoryColletion').get('territories').length}`
                 })
+
+                console.log(singleZone)
 
                 that.send('_zoneClickedCheck', singleZone, that)
 
@@ -413,6 +420,15 @@ export default Ember.Component.extend({
                 }, that)
             })
         },
+
+        _updateMapCenter: function(vertex) {
+            // vertex:  {
+            //     latitude: vertex.lat(),
+            //     longitude: vertex.lng()
+            // }
+            var latLng = new google.maps.LatLng(vertex.latitude, vertex.longitude); //Makes a latlng
+            this.get('map').panTo(latLng); //Make map global
+        }
 
     }
 });
