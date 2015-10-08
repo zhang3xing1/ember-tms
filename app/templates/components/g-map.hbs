@@ -42,14 +42,17 @@
     <div class="ui small olive card" id='zone'>
     <div class="content">
       <div class="header">{{zoneTapped.name}}</div>
+        <div class="item">
+          <div class="ui red button">Delete</div>
+        </div>
       <div class="meta">
-        <select class="ui dropdown" {{action 'change' on='change'}}>
+{{!--         <select class="ui dropdown" {{action 'change' on='change'}}>
           {{#each territoryColletion.zipCollection as |zip  index|}}
             <option value="{{zip.name}}" selected={{index}}>
               {{zip.name}}
             </option>
           {{/each}}
-        </select>
+        </select> --}}
 
 {{!--         <div class="ui circular labels">
         {{#each zoneTapped.path as |vertex  index|}}
