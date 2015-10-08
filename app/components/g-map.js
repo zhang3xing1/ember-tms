@@ -19,17 +19,14 @@ export default Ember.Component.extend({
     hiMap: 'tms-map',
 
     // init: function() {
-    //     // do initialization work...
-
-    //     // this function is called whenever the object is created
-    //     // you are overriding an 'init' method that already exists
-    //     // in the class hierarchy
-
-    //     // You can think of this function happening "in place of" init
-    //     // therefore you need to call super to make sure other init methods
-    //     // further up in the hierarchy get called
-
-    //     // call super to initialize other init methods 
+    //     do initialization work...
+    //     this function is called whenever the object is created
+    //     you are overriding an 'init' method that already exists
+    //     in the class hierarchy
+    //     You can think of this function happening "in place of" init
+    //     therefore you need to call super to make sure other init methods
+    //     further up in the hierarchy get called
+    //     call super to initialize other init methods 
     //     this._super();
     // },
 
@@ -166,10 +163,10 @@ export default Ember.Component.extend({
             this.get('groupsOfParcel').pushObject(singleGroupInfo)
         }, this)
 
-        this.get('map').setCenter({
-            lat: this.get('groupsOfParcel')[1].latitude,
-            lng: this.get('groupsOfParcel')[1].longitude
-        })
+        // this.get('map').setCenter({
+        //     lat: this.get('groupsOfParcel')[0].latitude,
+        //     lng: this.get('groupsOfParcel')[0].longitude
+        // })
 
         this.set('drawingTool', new google.maps.drawing.DrawingManager())
         this.send('_initiatePolygon')
@@ -269,6 +266,7 @@ export default Ember.Component.extend({
                 })
             }
             this.send('_updateCardZone', zone, index)
+            this.send('_updateMapCenter', zone)
         },
 
         cardConfirmed: function(parcel) {
@@ -372,8 +370,6 @@ export default Ember.Component.extend({
                 strokeWeight: 2.0,
                 fillColor: 'red'
             })
-            var firstVertex = zone.get('path')[0]
-            this.send('_updateMapCenter', firstVertex)
             this.set('zoneTapped', zone)
         },
 
@@ -421,11 +417,8 @@ export default Ember.Component.extend({
             })
         },
 
-        _updateMapCenter: function(vertex) {
-            // vertex:  {
-            //     latitude: vertex.lat(),
-            //     longitude: vertex.lng()
-            // }
+        _updateMapCenter: function(zone) {
+            var vertex = zone.get('path')[0]
             var latLng = new google.maps.LatLng(vertex.latitude, vertex.longitude); //Makes a latlng
             this.get('map').panTo(latLng); //Make map global
         }
