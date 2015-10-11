@@ -133,7 +133,6 @@ export default Ember.Component.extend({
             return group.id == group_id
         })
     },
-
     setup: Ember.on('init', function() {
         // do setup work ...
         _.forEach(this.get('parcelListInfo'), function(rawParcel, key) {
@@ -182,53 +181,110 @@ export default Ember.Component.extend({
         this.send('_colorMarkers', this.get('map'))
 
         // setup territoryColletion
-        var zoneListInfo = this.get('zoneListInfo').sort(function(a, b) {
-            if (a.name > b.name) {
-                return 1;
-            }
-            if (a.name < b.name) {
-                return -1;
-            }
-            // a must be equal to b
-            return 0;
+
+        var zip_promises = ["13149",
+            "13150",
+            "13151",
+            "13152",
+            "13153",
+            "13154",
+            "13155",
+            "13156",
+            "13157",
+            "13158",
+            "13159",
+            "13160",
+
+            "05700",
+            "05701",
+            "05702",
+            "05703",
+            "05704",
+            "05705",
+            "05706",
+            "05707",
+            "05708",
+            "05709",
+            "05710",
+            "05711",
+            "05712",
+            "05713",
+            "05714",
+            "05715",
+            "05716",
+            "05717",
+            "05718",
+            "05719",
+            "05829",
+            "05830",
+            "05831",
+            "05832",
+
+            "13100",
+            "13101",
+            "13103",
+            "13104",
+            "13105",
+            "13106",
+            "13442",
+            "13443",
+            "13444",
+            "13445",
+            "13446",
+            "13447",
+            "13448",
+            "13449",
+            "13450",
+            "13451",
+            "13452",
+            "13453"
+        ].map(function(zip) {
+            return $.getJSON('/api/zips/' + zip)
         })
 
-        _.forEach(zoneListInfo, function(zoneInfo) {
-            var paths = zoneInfo.vertexes.map(function(vertex) {
-                return {
-                    lat: parseFloat(vertex.latitude),
-                    lng: parseFloat(vertex.longitude)
-                }
+        var that = this;
+        $.when(zip_promises).done(function() {
+            _.forEach(arguments[0], function(a_promise) {
+                a_promise.done(function(zoneInfo) {
+                    console.log(zoneInfo)
+                    var paths = zoneInfo.vertexes.map(function(vertex) {
+                        return {
+                            lat: parseFloat(vertex.latitude),
+                            lng: parseFloat(vertex.longitude)
+                        }
+                    })
+
+                    var singleZone = Territory.create({
+                        polygon: new google.maps.Polygon({
+                            paths: paths,
+                            strokeColor: '#f0ede5',
+                            strokeOpacity: 0.8,
+                            strokeWeight: 2,
+                            fillColor: 'green',
+                            fillOpacity: 0.35,
+                            map: that.get('map'),
+                            zIndex: 1
+                        }),
+                        name: zoneInfo.name,
+                        isOriginal: JSON.parse(zoneInfo.isOriginal)
+                    })
+
+
+                    that.send('_zoneClickedCheck', singleZone, that)
+
+                    // google.maps.event.addListener(singleTerritory.get('polygon'), 'mousemove', function(event) {
+                    //     var result = that.checkIn({
+                    //         longitude: event.latLng.lng(),
+                    //         latitude: event.latLng.lat()
+                    //     }, singleTerritory.vertexes)
+                    //     console.log(result)
+                    // });
+
+                    that.get('territoryColletion').get('territories').pushObject(singleZone)
+                })
             })
+        });
 
-            var singleZone = Territory.create({
-                polygon: new google.maps.Polygon({
-                    paths: paths,
-                    strokeColor: '#f0ede5',
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillColor: 'green',
-                    fillOpacity: 0.35,
-                    map: this.get('map'),
-                    zIndex: 1
-                }),
-                name: zoneInfo.name,
-                isOriginal: JSON.parse(zoneInfo.isOriginal)
-            })
-
-
-            this.send('_zoneClickedCheck', singleZone, that)
-
-            // google.maps.event.addListener(singleTerritory.get('polygon'), 'mousemove', function(event) {
-            //     var result = that.checkIn({
-            //         longitude: event.latLng.lng(),
-            //         latitude: event.latLng.lat()
-            //     }, singleTerritory.vertexes)
-            //     console.log(result)
-            // });
-
-            this.get('territoryColletion').get('territories').pushObject(singleZone)
-        }, this)
 
         // function happens whenever init is called
         // but you don't have to call super because
@@ -351,7 +407,7 @@ export default Ember.Component.extend({
             }
             drawingTool.setOptions({
                 drawingMode: google.maps.drawing.OverlayType.POLYGON,
-                drawingControl: true,
+                drawingControl: false,
                 drawingControlOptions: {
                     // position: google.maps.ControlPosition.TOP_CENTER, // show control 
                     drawingModes: [google.maps.drawing.OverlayType.POLYGON]
