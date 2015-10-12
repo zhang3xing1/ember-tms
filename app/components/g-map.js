@@ -26,7 +26,7 @@ export default Ember.Component.extend({
     //     You can think of this function happening "in place of" init
     //     therefore you need to call super to make sure other init methods
     //     further up in the hierarchy get called
-    //     call super to initialize other init methods 
+    //     call super to initialize other init methods
     //     this._super();
     // },
 
@@ -181,73 +181,47 @@ export default Ember.Component.extend({
         this.send('_colorMarkers', this.get('map'))
 
         // setup territoryColletion
+        var that = this;
 
-        var zip_promises = ["13149",
-            "13150",
-            "13151",
-            "13152",
-            "13153",
-            "13154",
-            "13155",
-            "13156",
-            "13157",
-            "13158",
-            "13159",
-            "13160",
-
-            "05700",
-            "05701",
-            "05702",
-            "05703",
-            "05704",
-            "05705",
-            "05706",
-            "05707",
-            "05708",
-            "05709",
-            "05710",
-            "05711",
-            "05712",
-            "05713",
-            "05714",
-            "05715",
-            "05716",
-            "05717",
-            "05718",
-            "05719",
-            "05829",
-            "05830",
-            "05831",
-            "05832",
-
-            "13100",
-            "13101",
-            "13103",
-            "13104",
-            "13105",
-            "13106",
-            "13442",
-            "13443",
-            "13444",
-            "13445",
-            "13446",
-            "13447",
-            "13448",
-            "13449",
-            "13450",
-            "13451",
-            "13452",
-            "13453"
-        ].map(function(zip) {
-            return $.getJSON('/api/zips/' + zip)
+        var first = function(a_promise) {
+            a_promise.done(function(territory) {
+                var zip_promises = territory.zips.map(function(zip) {
+                    return $.getJSON('/api/zips/' + zip)
+                })
+                $.when(zip_promises).done(second_)
+            })
+        }
+        var defaultTerritories = ['test01', 'test02', 'test03'].map(function(name) {
+            return $.getJSON('/api/territories/' + name)
         })
 
-        var that = this;
-        $.when(zip_promises).done(function() {
+        var promiss_parser = {
+            forEach: function(callback) {
+                return function() {
+                    _.forEach(arguments[0], function(a_promise) {
+                        a_promise.done(function(body) {
+                            callback(body)
+                        })
+                    })
+                }
+            }
+        }
+
+        var first_ = promiss_parser.forEach(function(territory) {
+            var zip_promises = territory.zips.map(function(zip) {
+                return $.getJSON('/api/zips/' + zip)
+            })
+            $.when(zip_promises).done(second_)
+        })
+
+
+
+        var second_ = function() {
+            console.log('second_')
             _.forEach(arguments[0], function(a_promise) {
-                a_promise.done(function(zoneInfo) {
-                    console.log(zoneInfo)
-                    var paths = zoneInfo.vertexes.map(function(vertex) {
+                a_promise.done(function(zip) {
+                    console.log(zip)
+                    var paths = zip.vertexes.map(function(vertex) {
                         return {
                             lat: parseFloat(vertex.latitude),
                             lng: parseFloat(vertex.longitude)
@@ -265,10 +239,9 @@ export default Ember.Component.extend({
                             map: that.get('map'),
                             zIndex: 1
                         }),
-                        name: zoneInfo.name,
-                        isOriginal: JSON.parse(zoneInfo.isOriginal)
+                        name: zip.name,
+                        isOriginal: JSON.parse(zip.isOriginal)
                     })
-
 
                     that.send('_zoneClickedCheck', singleZone, that)
 
@@ -283,7 +256,13 @@ export default Ember.Component.extend({
                     that.get('territoryColletion').get('territories').pushObject(singleZone)
                 })
             })
-        });
+        }
+
+
+        $.when(defaultTerritories).done(first_)
+
+
+
 
 
         // function happens whenever init is called
@@ -409,7 +388,7 @@ export default Ember.Component.extend({
                 drawingMode: google.maps.drawing.OverlayType.POLYGON,
                 drawingControl: false,
                 drawingControlOptions: {
-                    // position: google.maps.ControlPosition.TOP_CENTER, // show control 
+                    // position: google.maps.ControlPosition.TOP_CENTER, // show control
                     drawingModes: [google.maps.drawing.OverlayType.POLYGON]
                         // drawingModes: []
                 }
@@ -434,7 +413,7 @@ export default Ember.Component.extend({
             this.set('cardParcel', group.get('parcels'))
         },
 
-        // functions on google map event 
+        // functions on google map event
         _drawtoolCompleted: function(drawingTool, that) {
             google.maps.event.addListener(drawingTool, 'polygoncomplete', function(polygon) {
                 // drawPolygon(polygon);
