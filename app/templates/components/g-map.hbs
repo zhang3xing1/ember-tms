@@ -14,27 +14,35 @@
       </div>
     </div>
     <div class="ui small dropdown item scrolling">
+      Territories <i class="dropdown icon "></i>
+      <div class="menu">
+         {{#each territoryCollection as |territory index|}}
+          <div class="item" {{action 'groupTapped' group index}} >{{index}}:{{territory}}</div>
+          {{/each}}
+      </div>
+    </div>
+    <div class="ui small dropdown item scrolling">
       Zips <i class="dropdown icon "></i>
       <div class="menu">
-         {{#each territoryColletion.zipCollection as |territory index|}}
+         {{#each zipCollection.zipCollection as |territory index|}}
          <div class="item" {{action 'zoneTapped' territory index}} >
            {{territory.name}}
-         </div>      
+         </div>
           {{/each}}
       </div>
     </div>
     <div class="ui small dropdown item scrolling">
       Zones <i class="dropdown icon "></i>
       <div class="menu">
-        {{#each territoryColletion.zoneCollection  as |territory index|}}
+        {{#each zipCollection.zoneCollection  as |territory index|}}
            <div class="item" {{action 'zoneTapped' territory index}} >
              {{territory.name}}
-           </div>      
+           </div>
         {{/each}}
       </div>
     </div>
     <div class="item button-menu">
-        <div id='zone-maker' class="ui teal centered button" {{action 'zoneMaker'}}>1. Create </div>      
+        <div id='zone-maker' class="ui teal centered button" {{action 'zoneMaker'}}>1. Create </div>
     </div>
   </div>
 
@@ -47,7 +55,7 @@
         </div>
       <div class="meta">
 {{!--         <select class="ui dropdown" {{action 'change' on='change'}}>
-          {{#each territoryColletion.zipCollection as |zip  index|}}
+          {{#each zipCollection.zipCollection as |zip  index|}}
             <option value="{{zip.name}}" selected={{index}}>
               {{zip.name}}
             </option>
