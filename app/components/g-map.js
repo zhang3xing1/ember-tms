@@ -106,17 +106,6 @@ export default Ember.Component.extend({
 
     territoryCollection: Ember.A(),
 
-    // zipCollection: Ember.computed(function() {
-    //     var cc = this.get('territoryCollection').reduce(function(result, territory) {
-    //         result = result.concat(territory.get('subTerritories'))
-
-    //         console.log(result)
-    //         return result
-    //     }, [])
-
-    //     return cc
-    // }),
-
     pinSymbol: function() {
         return {
             path: "M27.648 -41.399q0 -3.816 -2.7 -6.516t-6.516 -2.7 -6.516 2.7 -2.7 6.516 2.7 6.516 6.516 2.7 6.516 -2.7 2.7 -6.516zm9.216 0q0 3.924 -1.188 6.444l-13.104 27.864q-0.576 1.188 -1.71 1.872t-2.43 0.684 -2.43 -0.684 -1.674 -1.872l-13.14 -27.864q-1.188 -2.52 -1.188 -6.444 0 -7.632 5.4 -13.032t13.032 -5.4 13.032 5.4 5.4 13.032z",
@@ -208,13 +197,16 @@ export default Ember.Component.extend({
 
 
         this.get('territoryCollection').pushObject(Territory.create({
-            name: 'test01'
+            name: 'test01',
+            subTerritories: Ember.A()
         }))
         this.get('territoryCollection').pushObject(Territory.create({
-            name: 'test02'
+            name: 'test02',
+            subTerritories: Ember.A()
         }))
         this.get('territoryCollection').pushObject(Territory.create({
-            name: 'test03'
+            name: 'test03',
+            subTerritories: Ember.A()
         }))
 
         var defaultTerritories = _.values(this.get('territoryCollection')).map(function(territory) {
@@ -222,7 +214,7 @@ export default Ember.Component.extend({
         })
 
         var first_fake = promiss_parser.forEach(function(territoryBody) {
-                territoryBody.zips.map(function(zipBody) {
+                var subTerritories = territoryBody.zips.map(function(zipBody) {
                     var paths = zipBody.vertexes.map(function(vertex) {
                         return {
                             lat: parseFloat(vertex.latitude),
@@ -246,22 +238,15 @@ export default Ember.Component.extend({
                     })
 
                     that.send('_zoneClickedCheck', singleZone, that)
-
-                    var updatedTerritory = _.find(that.get('territoryCollection'), function(territory) {
-                        return territory.get('name') == territoryBody.name
-                    })
-                    updatedTerritory.get('subTerritories').pushObject(singleZone)
-                        // google.maps.event.addListener(singleZip.get('polygon'), 'mousemove', function(event) {
-                        //     var result = that.checkIn({
-                        //         longitude: event.latLng.lng(),
-                        //         latitude: event.latLng.lat()
-                        //     }, singleZip.vertexes)
-                        //     console.log(result)
-                        // });
-
-                    // that.get('zipCollection').get('subTerritories').pushObject(singleZone)
+                    return singleZone;
                 })
+
+                var updatedTerritory = _.find(that.get('territoryCollection'), function(territory) {
+                    return territory.get('name') == territoryBody.name
+                })
+                updatedTerritory.get('subTerritories').pushObjects(subTerritories)
             }
+
 
         )
 
@@ -322,13 +307,11 @@ export default Ember.Component.extend({
 
         home: function() {
             $("#cards").hide()
+            // this.get('territoryCollection')[0].get('subTerritories').pushObject(1)
+            console.log(this.get('territoryCollection')[0])
+            console.log(this.get('territoryCollection')[0].get('subTerritories')).pushObject({hi: 'foo'})
+           console.log(`${this.get('territoryCollection')[0].get('subTerritories').length} | ${this.get('territoryCollection')[1].get('subTerritories').length} | ${this.get('territoryCollection')[2].get('subTerritories').length}`)
 
-            var cc = this.get('territoryCollection').reduce(function(result, territory) {
-                result = result.concat(territory.get('subTerritories'))
-                return result
-            }, [])
-
-            this.set('zipCollection', cc)
         },
 
         zoneMaker: function() {
@@ -439,7 +422,7 @@ export default Ember.Component.extend({
 
                 that.send('_zoneClickedCheck', singleZone, that)
 
-                that.get('zipCollection').get('subTerritories').pushObject(singleZone)
+                // that.get('zipCollection').get('subTerritories').pushObject(singleZone)
             });
         },
 
