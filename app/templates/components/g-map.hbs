@@ -17,33 +17,23 @@
       Territories <i class="dropdown icon "></i>
       <div class="menu">
          {{#each territoryCollection as |territory index|}}
-          <div class="item" {{action 'groupTapped' group index}} >{{index}}:{{territory}}</div>
+          <div class="item" {{action 'territoryTapped' territory index}} >{{territory.name}}({{index}})</div>
           {{/each}}
       </div>
     </div>
+
+    {{#each territoryCollection as |territory index|}}
     <div class="ui small dropdown item scrolling">
-      Zips <i class="dropdown icon "></i>
+     Territory_{{territory.name}} <i class="dropdown icon "></i>
       <div class="menu">
-         {{#each zipCollection.zipCollection as |territory index|}}
-         <div class="item" {{action 'zoneTapped' territory index}} >
-           {{territory.name}}
-         </div>
-          {{/each}}
-      </div>
-    </div>
-    <div class="ui small dropdown item scrolling">
-      Zones <i class="dropdown icon "></i>
-      <div class="menu">
-        {{#each zipCollection.zoneCollection  as |territory index|}}
-           <div class="item" {{action 'zoneTapped' territory index}} >
-             {{territory.name}}
+           {{#each territory.zipCollection as |zip index_|}}
+           <div class="item" {{action 'zoneTapped' zip index_ true}} >
+             {{zip.name}}({{index_}})
            </div>
-        {{/each}}
+            {{/each}}
       </div>
     </div>
-    <div class="item button-menu">
-        <div id='zone-maker' class="ui teal centered button" {{action 'zoneMaker'}}>1. Create </div>
-    </div>
+    {{/each}}
   </div>
 
   {{#if zoneTapped.name}}
@@ -51,22 +41,9 @@
     <div class="content">
       <div class="header">{{zoneTapped.name}}</div>
         <div class="item">
-          <div class="ui red button">Delete</div>
+          {{!-- <div class="ui red button">Delete</div> --}}
         </div>
       <div class="meta">
-{{!--         <select class="ui dropdown" {{action 'change' on='change'}}>
-          {{#each zipCollection.zipCollection as |zip  index|}}
-            <option value="{{zip.name}}" selected={{index}}>
-              {{zip.name}}
-            </option>
-          {{/each}}
-        </select> --}}
-
-{{!--         <div class="ui circular labels">
-        {{#each zoneTapped.path as |vertex  index|}}
-          <a class="ui teal label">{{index}}</a>
-        {{/each}}
-        </div> --}}
       </div>
       <div class="description">
 

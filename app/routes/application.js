@@ -8,7 +8,7 @@ export default Ember.Route.extend({
                     lat: 37.43890643,
                     lng: 127.1235116
                 },
-                zoom: 16,
+                zoom: 13,
                 mapTypeControl: true,
                 mapTypeControlOptions: {
                     style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,

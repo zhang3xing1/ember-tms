@@ -182,18 +182,6 @@ export default Ember.Component.extend({
 
         var that = this;
 
-        var promiss_parser = {
-            forEach: function(callback) {
-                return function() {
-                    _.forEach(arguments[0], function(a_promise) {
-                        a_promise.done(function(body) {
-                            callback(body)
-                        })
-                    })
-                }
-            }
-        }
-
         this.get('territoryCollection').pushObject(Territory.create({
             name: 'test01',
             subTerritories: Ember.A()
@@ -206,6 +194,18 @@ export default Ember.Component.extend({
             name: 'test03',
             subTerritories: Ember.A()
         }))
+
+        var promiss_parser = {
+            forEach: function(block_callback) {
+                return function() {
+                    _.forEach(arguments[0], function(a_promise) {
+                        a_promise.done(function(body) {
+                            block_callback(body)
+                        })
+                    })
+                }
+            }
+        }
 
         var defaultTerritories = _.values(this.get('territoryCollection')).map(function(territory) {
             return $.getJSON('/api/territories/' + territory.get('name'))
@@ -246,7 +246,6 @@ export default Ember.Component.extend({
                 updatedTerritory.get('subTerritories').pushObjects(subTerritories)
             }
 
-
         )
 
         $.when(defaultTerritories).done(first_fake)
@@ -276,6 +275,11 @@ export default Ember.Component.extend({
             })
             this.send('_updateCards', group)
             this.send('_highlightMarker', group)
+        },
+
+        territoryTapped: function(territory, index) {
+            var zone = territory.get('subTerritories')[0]
+            this.send('zoneTapped', zone, 0, true)
         },
 
         zoneTapped: function(zone, index, isCenterTo) {
