@@ -194,8 +194,6 @@ export default Ember.Component.extend({
             }
         }
 
-
-
         this.get('territoryCollection').pushObject(Territory.create({
             name: 'test01',
             subTerritories: Ember.A()
@@ -234,7 +232,8 @@ export default Ember.Component.extend({
                             zIndex: 1
                         }),
                         name: zipBody.name,
-                        isOriginal: JSON.parse(zipBody.isOriginal)
+                        isOriginal: JSON.parse(zipBody.isOriginal),
+                        centroid: new google.maps.LatLng(zipBody.centroid.latitude, zipBody.centroid.longitude)
                     })
 
                     that.send('_zoneClickedCheck', singleZone, that)
@@ -279,7 +278,7 @@ export default Ember.Component.extend({
             this.send('_highlightMarker', group)
         },
 
-        zoneTapped: function(zone, index) {
+        zoneTapped: function(zone, index, isCenterTo) {
             if (this.get('zoneTapped').polygon != '') {
                 this.get('zoneTapped').polygon.setOptions({
                     strokeWeight: 2.0,
@@ -287,7 +286,10 @@ export default Ember.Component.extend({
                 })
             }
             this.send('_updateCardZone', zone, index)
-            this.send('_updateMapCenter', zone)
+            if (isCenterTo) {
+                this.send('_updateMapCenter', zone)
+            };
+
         },
 
         cardConfirmed: function(parcel) {
@@ -444,9 +446,7 @@ export default Ember.Component.extend({
         },
 
         _updateMapCenter: function(zone) {
-            var vertex = zone.get('path')[0]
-            var latLng = new google.maps.LatLng(vertex.latitude, vertex.longitude); //Makes a latlng
-            this.get('map').panTo(latLng); //Make map global
+            this.get('map').panTo(zone.get('centroid')); //Make map global
         }
 
     }
