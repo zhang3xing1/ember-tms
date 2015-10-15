@@ -20,7 +20,7 @@ body {
     height: 100%;
 }
 
-#cards{
+#cards {
     width: 60%;
     right: 0;
     top: 10px;
@@ -30,13 +30,23 @@ body {
     overflow-y: scroll;
 }
 
-#zone{
-    max-height:  50%;
+#zone {
+    max-height: 50%;
     overflow-y: scroll;
 }
 
-.button-menu{
+.button-menu {
     text-align: center;
 }
 
-
+.labels {
+    color: red;
+    background-color: white;
+    font-family: "Lucida Grande", "Arial", sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    width: 60px;
+    border: 2px solid black;
+    white-space: nowrap;
+}

@@ -6,6 +6,11 @@ import Territory from '../models/territory';
 import Zip from '../models/zip';
 import _ from 'lodash/lodash';
 
+
+// import MarkerWithLabel from '../utils/markerwithlabel';
+import InfoBox from '../utils/infobox';
+
+
 export default Ember.Component.extend({
     tagName: 'g-map',
 
@@ -180,6 +185,52 @@ export default Ember.Component.extend({
 
         this.send('_colorMarkers', this.get('map'))
 
+
+        // var marker = new MarkerWithLabel({
+        //     position: homeLatLng,
+        //     map: this.get('map'),
+        //     draggable: true,
+        //     raiseOnDrag: true,
+        //     labelContent: "Foo bar",
+        //     labelAnchor: new google.maps.Point(3, 30),
+        //     labelClass: "labels", // the CSS class for the label
+        //     labelInBackground: false
+        // });
+
+        var polygonLabel = function(map_, content, latLng_) {
+            var label_1 = new InfoBox({
+                content: content,
+                boxStyle: {
+                    border: "1px solid black",
+                    textAlign: "center",
+                    backgroundColor: "white",
+                    fontSize: "8pt",
+                    width: "40px"
+                },
+                disableAutoPan: true,
+                pixelOffset: new google.maps.Size(-25, 0),
+                position: latLng_,
+                closeBoxURL: "",
+                isHidden: false,
+                enableEventPropagation: true
+            })
+            label_1.open(map_);
+
+            google.maps.event.addListener(map_, 'zoom_changed', function() {
+                if (map_.getZoom() < 13) {
+                    label_1.setMap(null);
+                } else {
+                    label_1.setMap(that.get('map'));
+                }
+                // console.log(map_.getZoom())
+            });
+        }
+
+        // polygonLabel(this.get('map'), 'foobar2', latLng)
+
+
+
+        // Territory setting
         var that = this;
 
         this.get('territoryCollection').pushObject(Territory.create({
@@ -237,8 +288,10 @@ export default Ember.Component.extend({
                     })
 
                     that.send('_zoneClickedCheck', singleZone, that)
+                    polygonLabel(that.get('map'), zipBody.name, new google.maps.LatLng(zipBody.centroid.latitude, zipBody.centroid.longitude))
                     return singleZone;
                 })
+
 
                 var updatedTerritory = _.find(that.get('territoryCollection'), function(territory) {
                     return territory.get('name') == territoryBody.name
@@ -313,10 +366,12 @@ export default Ember.Component.extend({
 
         home: function() {
             $("#cards").hide()
-            // this.get('territoryCollection')[0].get('subTerritories').pushObject(1)
+                // this.get('territoryCollection')[0].get('subTerritories').pushObject(1)
             console.log(this.get('territoryCollection')[0])
-            console.log(this.get('territoryCollection')[0].get('subTerritories')).pushObject({hi: 'foo'})
-           console.log(`${this.get('territoryCollection')[0].get('subTerritories').length} | ${this.get('territoryCollection')[1].get('subTerritories').length} | ${this.get('territoryCollection')[2].get('subTerritories').length}`)
+            console.log(this.get('territoryCollection')[0].get('subTerritories')).pushObject({
+                hi: 'foo'
+            })
+            console.log(`${this.get('territoryCollection')[0].get('subTerritories').length} | ${this.get('territoryCollection')[1].get('subTerritories').length} | ${this.get('territoryCollection')[2].get('subTerritories').length}`)
 
         },
 
