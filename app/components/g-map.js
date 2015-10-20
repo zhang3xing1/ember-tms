@@ -6,9 +6,9 @@ import Territory from '../models/territory';
 import Zip from '../models/zip';
 import _ from 'lodash/lodash';
 
-
 // import MarkerWithLabel from '../utils/markerwithlabel';
 import InfoBox from '../utils/infobox';
+import randomColor from '../utils/randomColor';
 
 
 export default Ember.Component.extend({
@@ -19,6 +19,7 @@ export default Ember.Component.extend({
 
         $('select.dropdown')
             .dropdown();
+
     },
 
     hiMap: 'tms-map',
@@ -197,6 +198,7 @@ export default Ember.Component.extend({
         //     labelInBackground: false
         // });
 
+        // label for showing centroid of polygon
         var polygonLabel = function(map_, content, latLng_) {
             var label_1 = new InfoBox({
                 content: content,
@@ -205,7 +207,7 @@ export default Ember.Component.extend({
                     textAlign: "center",
                     backgroundColor: "white",
                     fontSize: "8pt",
-                    width: "40px"
+                    width: "72px"
                 },
                 disableAutoPan: true,
                 pixelOffset: new google.maps.Size(-25, 0),
@@ -227,8 +229,6 @@ export default Ember.Component.extend({
         }
 
         // polygonLabel(this.get('map'), 'foobar2', latLng)
-
-
 
         // Territory setting
         var that = this;
@@ -263,7 +263,12 @@ export default Ember.Component.extend({
         })
 
         var first_fake = promiss_parser.forEach(function(territoryBody) {
-                var subTerritories = territoryBody.zips.map(function(zipBody) {
+                var zipsOrder = territoryBody.order
+                var greensColors = randomColor({
+                    hue: 'random',
+                    count: territoryBody.zips.length
+                })
+                var subTerritories = territoryBody.zips.map(function(zipBody, zipIndex) {
                     var paths = zipBody.vertexes.map(function(vertex) {
                         return {
                             lat: parseFloat(vertex.latitude),
@@ -277,18 +282,32 @@ export default Ember.Component.extend({
                             strokeColor: '#f0ede5',
                             strokeOpacity: 0.8,
                             strokeWeight: 2,
-                            fillColor: 'green',
-                            fillOpacity: 0.35,
+                            // fillColor: 'green',
+                            fillColor: greensColors[zipIndex],
+                            fillOpacity: 0.65,
                             map: that.get('map'),
                             zIndex: 1
                         }),
+                        originalColor: greensColors[zipIndex],
                         name: zipBody.name,
                         isOriginal: JSON.parse(zipBody.isOriginal),
                         centroid: new google.maps.LatLng(zipBody.centroid.latitude, zipBody.centroid.longitude)
                     })
 
                     that.send('_zoneClickedCheck', singleZone, that)
-                    polygonLabel(that.get('map'), zipBody.name, new google.maps.LatLng(zipBody.centroid.latitude, zipBody.centroid.longitude))
+                        // if (zipsOrder.length == 0) {
+                        //     polygonLabel(that.get('map'), `(${zipIndex+1})-${zipBody.name}`, new google.maps.LatLng(zipBody.centroid.latitude, zipBody.centroid.longitude))
+
+                    // } else {
+                    //     var order = zipsOrder[String(zipBody.name)]
+                    //     if (order != undefined) {
+                    //         polygonLabel(that.get('map'), `(${order.join(',')})-${zipBody.name}`, new google.maps.LatLng(zipBody.centroid.latitude, zipBody.centroid.longitude))
+                    //     } else {
+                    //         polygonLabel(that.get('map'), `(X)-${zipBody.name}`, new google.maps.LatLng(zipBody.centroid.latitude, zipBody.centroid.longitude))
+
+                    //     };
+
+                    // };
                     return singleZone;
                 })
 
@@ -332,14 +351,13 @@ export default Ember.Component.extend({
 
         territoryTapped: function(territory, index) {
             var zone = territory.get('subTerritories')[0]
-            this.send('zoneTapped', zone, 0, true)
+            this.send('zoneCellTapped', zone, 0, true)
         },
 
-        zoneTapped: function(zone, index, isCenterTo) {
+        zoneCellTapped: function(zone, index, isCenterTo) {
             if (this.get('zoneTapped').polygon != '') {
                 this.get('zoneTapped').polygon.setOptions({
-                    strokeWeight: 2.0,
-                    fillColor: 'green'
+                    fillColor: zone.get('originalColor')
                 })
             }
             this.send('_updateCardZone', zone, index)
@@ -366,13 +384,11 @@ export default Ember.Component.extend({
 
         home: function() {
             $("#cards").hide()
-                // this.get('territoryCollection')[0].get('subTerritories').pushObject(1)
-            console.log(this.get('territoryCollection')[0])
-            console.log(this.get('territoryCollection')[0].get('subTerritories')).pushObject({
-                hi: 'foo'
-            })
-            console.log(`${this.get('territoryCollection')[0].get('subTerritories').length} | ${this.get('territoryCollection')[1].get('subTerritories').length} | ${this.get('territoryCollection')[2].get('subTerritories').length}`)
+            $('.modal-content').show();
 
+            $('.modal-btn-close').click(function() {
+                $('.modal-content').hide();
+            });
         },
 
         zoneMaker: function() {
@@ -454,8 +470,7 @@ export default Ember.Component.extend({
 
         _updateCardZone: function(zone, index) {
             zone.polygon.setOptions({
-                strokeWeight: 2.0,
-                fillColor: 'red'
+                 fillColor: 'red'
             })
             this.set('zoneTapped', zone)
         },
@@ -478,9 +493,6 @@ export default Ember.Component.extend({
                     polygon: polygon,
                     name: `zone--${that.get('zipCollection').get('subTerritories').length}`
                 })
-
-                console.log(singleZone)
-
                 that.send('_zoneClickedCheck', singleZone, that)
 
                 // that.get('zipCollection').get('subTerritories').pushObject(singleZone)
@@ -490,7 +502,7 @@ export default Ember.Component.extend({
         _zoneClickedCheck: function(zone, that) {
             // that is global this
             google.maps.event.addListener(zone.get('polygon'), 'click', function(event) {
-                that.send('zoneTapped', zone, 0)
+                that.send('zoneCellTapped', zone, 0)
                 _.forEach(that.get('groupsOfParcel'), function(group) {
                     // body...
                     var result = that.checkIn({

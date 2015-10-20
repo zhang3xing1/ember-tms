@@ -1,4 +1,3 @@
-import Ember from 'ember';
 /**
  * @name InfoBox
  * @version 1.1.13 [March 19, 2014]

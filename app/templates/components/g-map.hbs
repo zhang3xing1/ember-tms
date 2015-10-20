@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    {{#each territoryCollection as |territory index|}}
+{{!--     {{#each territoryCollection as |territory index|}}
     <div class="ui small dropdown item scrolling">
      Territory_{{territory.name}} <i class="dropdown icon "></i>
       <div class="menu">
@@ -33,7 +33,7 @@
             {{/each}}
       </div>
     </div>
-    {{/each}}
+    {{/each}} --}}
   </div>
 
   {{#if zoneTapped.name}}
@@ -59,7 +59,9 @@
   {{/if}}
 
 </div>
+{{!-- nav --}}
 
+{{!-- cards on left --}}
 <div id="cards" class="ui cards">
 
    {{#each cardParcel as |parcel index|}}
@@ -89,5 +91,45 @@
   </div>
   {{/each}}
 </div>
+{{!-- cards on left --}}
+
+
+
+{{!-- content --}}
+<div class="modal-content">
+    <div class='modal-container'>
+    <div class="header"><h3>Territory<span class="modal-btn-close" {{action 'hideCard' index}}><i class="remove icon"></i></span></h3></div>
+    <table class="ui celled table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Territory</th>
+        <th>Postal Code</th>
+      </tr>
+    </thead>
+    <tbody>
+
+    {{#each territoryCollection as |territory index|}}
+
+           {{#each territory.zipCollection as |zip index_|}}
+            <tr onclick={{action 'zoneCellTapped' zip index_ true}}>
+              <td>{{index_}}</td>
+              <td class="negative">{{territory.name}}</td>
+              <td>{{zip.name}}</td>
+            </tr>
+            {{/each}}
+
+    {{/each}}
+
+
+    </tbody>
+  </table>
+    </div>
+</div>
+
+
+
+
+{{!-- content --}}
 
 {{!-- <h3 {{action 'hello' hiMap}}>Hi, this is  {{hiMap}} </h3> --}}
