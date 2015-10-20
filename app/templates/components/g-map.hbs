@@ -112,7 +112,7 @@
     {{#each territoryCollection as |territory index|}}
 
            {{#each territory.zipCollection as |zip index_|}}
-            <tr onclick={{action 'zoneCellTapped' zip index_ true}}>
+            <tr onclick={{action 'TappedZoneMap' zip index_ true}}>
               <td>{{index_}}</td>
               <td class="negative">{{territory.name}}</td>
               <td>{{zip.name}}</td>

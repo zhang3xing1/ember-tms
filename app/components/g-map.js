@@ -264,7 +264,7 @@ export default Ember.Component.extend({
 
         var first_fake = promiss_parser.forEach(function(territoryBody) {
                 var zipsOrder = territoryBody.order
-                var greensColors = randomColor({
+                var randomColors = randomColor({
                     hue: 'random',
                     count: territoryBody.zips.length
                 })
@@ -283,12 +283,12 @@ export default Ember.Component.extend({
                             strokeOpacity: 0.8,
                             strokeWeight: 2,
                             // fillColor: 'green',
-                            fillColor: greensColors[zipIndex],
+                            fillColor: randomColors[zipIndex],
                             fillOpacity: 0.65,
                             map: that.get('map'),
                             zIndex: 1
                         }),
-                        originalColor: greensColors[zipIndex],
+                        originalColor: randomColors[zipIndex],
                         name: zipBody.name,
                         isOriginal: JSON.parse(zipBody.isOriginal),
                         centroid: new google.maps.LatLng(zipBody.centroid.latitude, zipBody.centroid.longitude)
@@ -351,13 +351,14 @@ export default Ember.Component.extend({
 
         territoryTapped: function(territory, index) {
             var zone = territory.get('subTerritories')[0]
-            this.send('zoneCellTapped', zone, 0, true)
+            this.send('TappedZoneMap', zone, 0, true)
         },
 
-        zoneCellTapped: function(zone, index, isCenterTo) {
+        TappedZoneMap: function(zone, index, isCenterTo) {
+
             if (this.get('zoneTapped').polygon != '') {
                 this.get('zoneTapped').polygon.setOptions({
-                    fillColor: zone.get('originalColor')
+                    fillColor: this.get('zoneTapped').get('originalColor')
                 })
             }
             this.send('_updateCardZone', zone, index)
@@ -502,7 +503,7 @@ export default Ember.Component.extend({
         _zoneClickedCheck: function(zone, that) {
             // that is global this
             google.maps.event.addListener(zone.get('polygon'), 'click', function(event) {
-                that.send('zoneCellTapped', zone, 0)
+                that.send('TappedZoneMap', zone, 0)
                 _.forEach(that.get('groupsOfParcel'), function(group) {
                     // body...
                     var result = that.checkIn({
