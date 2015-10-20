@@ -349,9 +349,14 @@ export default Ember.Component.extend({
             this.send('_highlightMarker', group)
         },
 
-        territoryTapped: function(territory, index) {
-            var zone = territory.get('subTerritories')[0]
-            this.send('TappedZoneMap', zone, 0, true)
+        didTapTerritory: function(territory, index) {
+            this.set('territoryDidTap', territory)
+            // var zone = territory.get('subTerritories')[0]
+            // this.send('TappedZoneMap', zone, 0, true)
+            $('.modal-content').show();
+            $('.modal-btn-close').click(function() {
+                $('.modal-content').hide();
+            });
         },
 
         TappedZoneMap: function(zone, index, isCenterTo) {
@@ -385,11 +390,11 @@ export default Ember.Component.extend({
 
         home: function() {
             $("#cards").hide()
-            $('.modal-content').show();
+            // $('.modal-content').show();
 
-            $('.modal-btn-close').click(function() {
-                $('.modal-content').hide();
-            });
+            // $('.modal-btn-close').click(function() {
+            //     $('.modal-content').hide();
+            // });
         },
 
         zoneMaker: function() {
