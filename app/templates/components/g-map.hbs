@@ -15,6 +15,11 @@
     <div class="ui small dropdown item scrolling">
       Territories <i class="dropdown icon "></i>
       <div class="menu">
+          <a class="item">
+            <i class="add square icon"></i>
+            Add a Territory
+          </a>
+          <div role="separator" class="divider"></div>
          {{#each territoryCollection as |territory index|}}
           <div class="item" {{action 'didTapTerritory' territory index}} >{{territory.name}}({{index}})</div>
           {{/each}}
@@ -69,21 +74,28 @@
 
 
 {{!-- content --}}
-<div class="modal-content">
-    <div class='modal-container'>
-    <div class="header"><h3>Territory-{{territoryDidTap.name}}<span class="modal-btn-close" {{action 'hideCard' index}}><i class="remove icon"></i></span></h3></div>
-    <table class="ui celled table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Territory</th>
-        <th>Postal Code</th>
-      </tr>
-    </thead>
-    <tbody>
+<div class="fullscreen modal" >
+  <div id='modal-container'>
 
-    {{!-- {{#each territoryCollection as |territory index|}} --}}
+    <div class="content">
+        <div class="header"><h3>Territory-{{territoryDidTap.name}}<span id="modal-btn-close" {{action 'hideCard' index}}><i class="remove icon"></i></span></h3></div>
+        <div class="ui search">
+          <div class="ui icon input">
+            <input class="prompt" type="text" placeholder="Search countries...">
+            <i class="search icon"></i>
+          </div>
+          <div class="results"></div>
+        </div>
 
+         <table class="ui celled table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Territory</th>
+              <th>Postal Code</th>
+            </tr>
+          </thead>
+          <tbody>
            {{#each territoryDidTap.zipCollection as |zip index_|}}
             <tr onclick={{action 'TappedZoneMap' zip index_ true}}>
               <td>{{index_}}</td>
@@ -91,18 +103,14 @@
               <td>{{zip.name}}</td>
             </tr>
             {{/each}}
-
-{{!--     {{/each}} --}}
-
-
-    </tbody>
-  </table>
+          </tbody>
+        </table>
     </div>
+    <div class="actions">
+      <div class="ui approve button">Approve</div>
+      <div class="ui button">Neutral</div>
+      <div class="ui cancel button">Cancel</div>
+    </div>
+  </div>
+
 </div>
-
-
-
-
-{{!-- content --}}
-
-{{!-- <h3 {{action 'hello' hiMap}}>Hi, this is  {{hiMap}} </h3> --}}

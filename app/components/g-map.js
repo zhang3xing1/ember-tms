@@ -14,13 +14,32 @@ import randomColor from '../utils/randomColor';
 export default Ember.Component.extend({
     tagName: 'g-map',
 
-    didInsertElement: function() {
-        $('.ui.dropdown').dropdown() // sematic-UI dropmenu needs it.
 
-        $('select.dropdown')
-            .dropdown();
+    myMethod: function() {
+        Ember.run.schedule('afterRender', this, function() {
+            // some code
+            // didInsertElement
+            $('.ui.dropdown').dropdown() // sematic-UI dropmenu needs it.
 
-    },
+            $('select.dropdown')
+                .dropdown();
+
+            $('.ui.search')
+                .search({
+                    apiSettings: {
+                        url: '/api/search/zips?q={query}'
+                    },
+                    fields: {
+                        results: 'items',
+                        title: 'name',
+                        // url: 'html_url'
+                    },
+                    minCharacters: 3
+                });
+            // $(".dimmer").css("background-color", "rgba(255,255,255,0.4)");
+        });
+    }.on('init'),
+
 
     hiMap: 'tms-map',
 
@@ -199,15 +218,22 @@ export default Ember.Component.extend({
         // });
 
         // label for showing centroid of polygon
-        var polygonLabel = function(map_, content, latLng_) {
+        var labelColors = randomColor({
+            hue: 'random',
+            luminosity: 'dark',
+            count: 26
+        })
+
+        var polygonLabel = function(map_, content, latLng_, colorIndex) {
             var label_1 = new InfoBox({
                 content: content,
                 boxStyle: {
                     border: "1px solid black",
                     textAlign: "center",
                     backgroundColor: "white",
-                    fontSize: "8pt",
-                    width: "72px"
+                    fontSize: "pt",
+                    width: "48px",
+                    color: labelColors[colorIndex]
                 },
                 disableAutoPan: true,
                 pixelOffset: new google.maps.Size(-25, 0),
@@ -263,11 +289,12 @@ export default Ember.Component.extend({
         })
 
         var first_fake = promiss_parser.forEach(function(territoryBody) {
-                var zipsOrder = territoryBody.order
                 var randomColors = randomColor({
                     hue: 'random',
                     count: territoryBody.zips.length
                 })
+                var floorOrder = territoryBody.floor_order
+                var mapOrder = territoryBody.map_order
                 var subTerritories = territoryBody.zips.map(function(zipBody, zipIndex) {
                     var paths = zipBody.vertexes.map(function(vertex) {
                         return {
@@ -295,21 +322,27 @@ export default Ember.Component.extend({
                     })
 
                     that.send('_zoneClickedCheck', singleZone, that)
-                        // if (zipsOrder.length == 0) {
-                        //     polygonLabel(that.get('map'), `(${zipIndex+1})-${zipBody.name}`, new google.maps.LatLng(zipBody.centroid.latitude, zipBody.centroid.longitude))
 
-                    // } else {
-                    //     var order = zipsOrder[String(zipBody.name)]
-                    //     if (order != undefined) {
-                    //         polygonLabel(that.get('map'), `(${order.join(',')})-${zipBody.name}`, new google.maps.LatLng(zipBody.centroid.latitude, zipBody.centroid.longitude))
-                    //     } else {
-                    //         polygonLabel(that.get('map'), `(X)-${zipBody.name}`, new google.maps.LatLng(zipBody.centroid.latitude, zipBody.centroid.longitude))
 
-                    //     };
+                    var blockName = _.findKey(floorOrder, function(arr) {
+                        return _.includes(arr, zipBody.name);
+                    });
 
-                    // };
+                    if (blockName == undefined) {blockName = 'A'};
+                    polygonLabel(that.get('map'), `${zipBody.name}-${blockName}`, new google.maps.LatLng(zipBody.centroid.latitude, zipBody.centroid.longitude), blockName.charCodeAt(0)-65)
                     return singleZone;
                 })
+
+                var mapOrderLines = new google.maps.Polyline({
+                    path: mapOrder,
+                    geodesic: true,
+                    strokeColor: 'black',
+                    strokeOpacity: 1.0,
+                    strokeWeight: 5
+                });
+
+                mapOrderLines.setMap(that.get('map'));
+
 
 
                 var updatedTerritory = _.find(that.get('territoryCollection'), function(territory) {
@@ -351,12 +384,25 @@ export default Ember.Component.extend({
 
         didTapTerritory: function(territory, index) {
             this.set('territoryDidTap', territory)
-            // var zone = territory.get('subTerritories')[0]
-            // this.send('TappedZoneMap', zone, 0, true)
-            $('.modal-content').show();
-            $('.modal-btn-close').click(function() {
-                $('.modal-content').hide();
-            });
+                // var zone = territory.get('subTerritories')[0]
+                // this.send('TappedZoneMap', zone, 0, true)
+                // $('#modal-content').show();
+                // $('#modal-btn-close').click(function() {
+                //     $('#modal-content').hide();
+                // });
+
+            $('.fullscreen.modal')
+                .modal({
+                    closable: false,
+                    onDeny: function() {
+                        window.alert('Wait not yet!');
+                        return false;
+                    },
+                    onApprove: function() {
+                        window.alert('Approved!');
+                    }
+                })
+                .modal('show');
         },
 
         TappedZoneMap: function(zone, index, isCenterTo) {
@@ -390,7 +436,7 @@ export default Ember.Component.extend({
 
         home: function() {
             $("#cards").hide()
-            // $('.modal-content').show();
+                // $('.modal-content').show();
 
             // $('.modal-btn-close').click(function() {
             //     $('.modal-content').hide();
@@ -476,7 +522,7 @@ export default Ember.Component.extend({
 
         _updateCardZone: function(zone, index) {
             zone.polygon.setOptions({
-                 fillColor: 'red'
+                fillColor: 'red'
             })
             this.set('zoneTapped', zone)
         },
