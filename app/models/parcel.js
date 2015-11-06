@@ -5,6 +5,9 @@ export default Ember.Object.extend({
   addr1: '',
   addr2: '',
   invoicenumber: '',
+  shortInvoice: Ember.computed('invoicenumber', function(){
+    return this.get('invoicenumber').slice( -3 )
+  }),
   ordernumber: '',
   // state list
   sequenceOfAlgorithm: -1,

@@ -47,14 +47,14 @@
   <div class="card" id="card-{{index}}">
     <div class="content">
       <div class="header">
-        {{parcel.name}}
+        {{parcel.zip}}-{{parcel.blockName}}-{{parcel.shortInvoice}}
         <span class="right floated " {{action 'hideCard' index}}><i class="remove icon"></i></span>
       </div>
       <div class="meta">
-        {{parcel.invoicenumber}}
+        {{parcel.name}}
       </div>
       <div class="description">
-        {{parcel.addr1}}  {{parcel.addr2}}
+        {{parcel.addr1}} {{parcel.addr2}}
       </div>
     </div>
     <div class="extra content">
@@ -107,9 +107,8 @@
         </table>
     </div>
     <div class="actions">
-      <div class="ui approve button">Approve</div>
-      <div class="ui button">Neutral</div>
-      <div class="ui cancel button">Cancel</div>
+      <div class="ui approve button">OK</div>
+      {{!-- <div class="ui cancel button">Cancel</div> --}}
     </div>
   </div>
 

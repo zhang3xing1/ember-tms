@@ -2,6 +2,8 @@ import Ember from 'ember';
 
 export default Ember.Object.extend({
     subTerritories:  Ember.A(),
+    // floorOrder:
+    // mapOrder:
     zipCollection: Ember.computed.filterBy('subTerritories', 'isAvailableZip', true),
     zoneCollection: Ember.computed.filterBy('subTerritories', 'isAvailableZone', true)
 

@@ -10,7 +10,6 @@ import _ from 'lodash/lodash';
 import InfoBox from '../utils/infobox';
 import randomColor from '../utils/randomColor';
 
-
 export default Ember.Component.extend({
     tagName: 'g-map',
 
@@ -160,42 +159,104 @@ export default Ember.Component.extend({
     },
     setup: Ember.on('init', function() {
         // do setup work ...
-        _.forEach(this.get('parcelListInfo'), function(rawParcel, key) {
-            var singleGroupInfo = ParcelCollection.create({
-                id: key,
-                zip: rawParcel[0].zip,
-                count: rawParcel.length,
-                title: _.uniq(rawParcel.map(function(item) {
-                    return item.name
-                })).join(' '),
-                latitude: parseFloat(rawParcel[0].latitude),
-                longitude: parseFloat(rawParcel[0].longitude),
-                parcels: Ember.A(rawParcel.map(function(item) {
-                    return Parcel.create({
-                        name: item.name,
-                        addr1: item.addr1,
-                        addr2: item.addr2,
-                        latitude: parseFloat(item.latitude),
-                        longitude: parseFloat(item.longitude),
-                        invoicenumber: item.invoicenumber,
-                        ordernumber: item.ordernumber,
-                        group_id: key,
-                        isDelivered: false
-                    })
-                })),
-            })
-            this.get('groupsOfParcel').pushObject(singleGroupInfo)
-        }, this)
+        var that = this
 
-        // this.get('map').setCenter({
-        //     lat: this.get('groupsOfParcel')[0].latitude,
-        //     lng: this.get('groupsOfParcel')[0].longitude
-        // })
+        // danger
+        var floorOrderForTest02 = {
+                "A": ["05673", "05672"],
+                "B": ["05674", "05678", "05677", "05676", "05668"],
+                "C": ["05666", "05669", "05667", "05675"],
+                "D": ["05664", "05670", "05671", "05663", "05662", "05665"],
+                "E": ["05620", "05619", "05618", "05623", "05622"],
+                "F": ["05621", "05626", "05625", "05624"]
+            }
+            // danger
+
+        Ember.$.getJSON('/api/parcels/2015-10-29/2015-10-29/').then(function(parcels) {
+            var nnn = 0
+            var cccc = []
+            _.forEach(parcels, function(rawParcel, key) {
+                console.log(key)
+                var blockName = _.findKey(floorOrderForTest02, function(arr) {
+                    return _.includes(arr, rawParcel[0].postcode);
+                });
+
+                var singleGroupInfo = ParcelCollection.create({
+                    id: key,
+                    zip: rawParcel[0].postcode,
+                    count: rawParcel.length,
+                    title: _.uniq(rawParcel.map(function(item) {
+                        return item.name
+                    })).join(' '),
+                    latitude: parseFloat(rawParcel[0].latitude),
+                    longitude: parseFloat(rawParcel[0].longitude),
+                    parcels: Ember.A(rawParcel.map(function(item) {
+                        return Parcel.create({
+                            name: item.name,
+                            addr1: item.addr1,
+                            addr2: item.addr2,
+                            boxCode: item.box_code,
+                            shipmentNote: item.shipment_note,
+                            deliveryStatus: item.delivery_status,
+                            blockName: blockName,
+                            zip: rawParcel[0].postcode,
+                            latitude: parseFloat(item.latitude),
+                            longitude: parseFloat(item.longitude),
+                            invoicenumber: item.invoicenumber,
+                            ordernumber: item.ordernumber,
+                            group_id: key,
+                            isDelivered: false
+                        })
+                    })),
+                })
+
+                // if (rawParcel[0].postcode != '13452') {
+                that.get('groupsOfParcel').pushObject(singleGroupInfo)
+
+                _.forEach(singleGroupInfo.get('parcels'), function(parcel) {
+                    nnn = nnn + 1
+                    console.log(nnn)
+                    cccc.push({
+                        name: parcel.get('name'),
+                        shortInvoice: `${parcel.get('shortInvoice')}(${parcel.get('boxCode')})`,
+                        blockName: parcel.get('blockName'),
+                        zip: parcel.get('zip'),
+                        boxCode: parcel.get('boxCode'),
+                        addr: parcel.get('addr1') + parcel.get('addr2'),
+                        note: parcel.get('deliveryStatus') + parcel.get('shipmentNote')
+                    })
+                })
+
+                // }
+            }, that)
+
+
+            var groups = _.groupBy(cccc, function(value) {
+                return value.zip + '#' + value.name;
+            });
+
+            var data = _.map(groups, function(group) {
+                return {
+                    zip: group[0].zip,
+                    name: group[0].name,
+                    shortInvoice: _.pluck(group, 'shortInvoice').join('-'),
+                    blockName: group[0].blockName,
+                    addr: group[0].addr,
+                    note: group[0].note,
+                    amount: _.pluck(group, 'shortInvoice').length
+                }
+            });
+
+            _.forEach(data, function(parcel) {
+                console.log(`${parcel.name}, ${parcel.shortInvoice}, ${parcel.blockName}, ${parcel.zip},${parcel.addr}, ${parcel.note}, ${parcel.amount}`)
+            })
+
+            that.send('_showAllMarkers')
+        })
 
         this.set('drawingTool', new google.maps.drawing.DrawingManager())
         this.send('_initiatePolygon')
 
-        var that = this
         google.maps.event.addListener(this.get('map'), 'click', function(event) {
             that.set('groupTapped', {
                 longitude: event.latLng.lng().toFixed(5),
@@ -205,17 +266,61 @@ export default Ember.Component.extend({
 
         this.send('_colorMarkers', this.get('map'))
 
+        var map = this.get('map')
+            // var infoWindow = new google.maps.InfoWindow({
+            //     map: map
+            // });
 
-        // var marker = new MarkerWithLabel({
-        //     position: homeLatLng,
-        //     map: this.get('map'),
-        //     draggable: true,
-        //     raiseOnDrag: true,
-        //     labelContent: "Foo bar",
-        //     labelAnchor: new google.maps.Point(3, 30),
-        //     labelClass: "labels", // the CSS class for the label
-        //     labelInBackground: false
+        // // Try HTML5 geolocation.
+        // if (navigator.geolocation) {
+        //     navigator.geolocation.getCurrentPosition(function(position) {
+        //         var pos = {
+        //             lat: position.coords.latitude,
+        //             lng: position.coords.longitude
+        //         };
+
+        //         infoWindow.setPosition(pos);
+        //         infoWindow.setContent('Location found.');
+        //         map.setCenter(pos);
+        //     }, function() {
+        //         handleLocationError(true, infoWindow, map.getCenter());
+        //     });
+        // } else {
+        //     // Browser doesn't support Geolocation
+        //     handleLocationError(false, infoWindow, map.getCenter());
+        // }
+
+
+        // var map, GeoMarker;
+
+
+        // var mapOptions = {
+        //     zoom: 17,
+        //     center: new google.maps.LatLng(-34.397, 150.644),
+        //     mapTypeId: google.maps.MapTypeId.ROADMAP
+        // };
+        // map = this.get('map')
+
+        // GeoMarker = new GeolocationMarker();
+        // GeoMarker.setCircleOptions({
+        //     fillColor: '#808080'
         // });
+
+        // google.maps.event.addListenerOnce(GeoMarker, 'position_changed', function() {
+        //     map.setCenter(this.getPosition());
+        //     map.fitBounds(this.getBounds());
+        // });
+
+        // google.maps.event.addListener(GeoMarker, 'geolocation_error', function(e) {
+        //     alert('There was an error obtaining your position. Message: ' + e.message);
+        // });
+
+        // GeoMarker.setMap(map);
+
+
+        // if (!navigator.geolocation) {
+        //     alert('Your browser does not support geolocation');
+        // }
 
         // label for showing centroid of polygon
         var labelColors = randomColor({
@@ -231,7 +336,7 @@ export default Ember.Component.extend({
                     border: "1px solid black",
                     textAlign: "center",
                     backgroundColor: "white",
-                    fontSize: "pt",
+                    fontSize: "9pt",
                     width: "48px",
                     color: labelColors[colorIndex]
                 },
@@ -272,6 +377,11 @@ export default Ember.Component.extend({
             subTerritories: Ember.A()
         }))
 
+        this.get('territoryCollection').pushObject(Territory.create({
+            name: 'test04',
+            subTerritories: Ember.A()
+        }))
+
         var promiss_parser = {
             forEach: function(block_callback) {
                 return function() {
@@ -288,13 +398,20 @@ export default Ember.Component.extend({
             return $.getJSON('/api/territories/' + territory.get('name'))
         })
 
+        var randomColors = randomColor({
+            hue: 'random',
+            count: 50
+        })
+
+
         var first_fake = promiss_parser.forEach(function(territoryBody) {
-                var randomColors = randomColor({
-                    hue: 'random',
-                    count: territoryBody.zips.length
+                var updatedTerritory = _.find(that.get('territoryCollection'), function(territory) {
+                    return territory.get('name') == territoryBody.name
                 })
                 var floorOrder = territoryBody.floor_order
                 var mapOrder = territoryBody.map_order
+                updatedTerritory.set('mapOrder', mapOrder)
+                updatedTerritory.set('floorOrder', floorOrder)
                 var subTerritories = territoryBody.zips.map(function(zipBody, zipIndex) {
                     var paths = zipBody.vertexes.map(function(vertex) {
                         return {
@@ -311,7 +428,7 @@ export default Ember.Component.extend({
                             strokeWeight: 2,
                             // fillColor: 'green',
                             fillColor: randomColors[zipIndex],
-                            fillOpacity: 0.65,
+                            fillOpacity: 0.5,
                             map: that.get('map'),
                             zIndex: 1
                         }),
@@ -328,8 +445,10 @@ export default Ember.Component.extend({
                         return _.includes(arr, zipBody.name);
                     });
 
-                    if (blockName == undefined) {blockName = 'A'};
-                    polygonLabel(that.get('map'), `${zipBody.name}-${blockName}`, new google.maps.LatLng(zipBody.centroid.latitude, zipBody.centroid.longitude), blockName.charCodeAt(0)-65)
+                    if (blockName == undefined) {
+                        blockName = 'N'
+                    };
+                    polygonLabel(that.get('map'), `${zipBody.name}-${blockName}`, new google.maps.LatLng(zipBody.centroid.latitude, zipBody.centroid.longitude), blockName.charCodeAt(0) - 65)
                     return singleZone;
                 })
 
@@ -344,10 +463,6 @@ export default Ember.Component.extend({
                 mapOrderLines.setMap(that.get('map'));
 
 
-
-                var updatedTerritory = _.find(that.get('territoryCollection'), function(territory) {
-                    return territory.get('name') == territoryBody.name
-                })
                 updatedTerritory.get('subTerritories').pushObjects(subTerritories)
             }
 
@@ -399,7 +514,7 @@ export default Ember.Component.extend({
                         return false;
                     },
                     onApprove: function() {
-                        window.alert('Approved!');
+                        // window.alert('Approved!');
                     }
                 })
                 .modal('show');
